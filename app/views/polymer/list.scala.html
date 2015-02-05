@@ -1,0 +1,66 @@
+@()
+
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/polymer/polymer.html")">
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-input/paper-input-decorator.html")">
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-button/paper-button.html")">
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/core-ajax/core-ajax.html")">
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-shadow/paper-shadow.html")">
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-item/paper-item.html")">
+<polymer-element name="master-list" constructor="MasterList" attribute="data">
+    <template>
+        <style>
+        :host {
+            display: block;
+            padding: 8px;
+            /*position: relative;*/
+            background-color: #E5E5E5;
+        }
+
+        .card{
+            margin: 8px;
+            font-size: 14px;
+            padding-left: 16px;
+            padding-right: 16px;
+            padding-bottom: 8px;
+            padding-top: 8px;
+            background: #fff;
+            line-height: 1.5;
+            min-width: 300px;;
+            max-width: 400px;
+        }
+
+        .cardhead{
+            font-size: 24px;
+            color: #FF9800;
+            margin-bottom: 8px;
+        }
+        .list{
+             max-height: 300px;
+             overflow : auto ;
+        }
+
+        </style>
+
+
+        <paper-shadow class="card" z="1" >
+            <div class="cardhead">
+                {{data.elementTypeLabel || noAccess }}
+            </div>
+
+            <div class="list">
+                <template repeat="{{element in data.elements}}">
+                    <paper-item>{{element.longName}} ({{element.name}})</paper-item>
+                </template>
+            </div>
+        </paper-shadow>
+
+    </template>
+
+    <script>
+        Polymer("master-list", {
+            data: null,
+            noAccess: "No Access"
+        });
+    </script>
+
+</polymer-element>
