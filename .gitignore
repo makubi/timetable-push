@@ -16,4 +16,4 @@ server.pid
 /dist/
 .cache
 
-public/polymer/bower_components
+public/polymer/bower_components/*
