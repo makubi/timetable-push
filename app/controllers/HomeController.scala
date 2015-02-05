@@ -11,9 +11,9 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 class HomeController(webUntisService: WebUntisService) extends Controller {
 
   val U_SERVER = "https://urania.webuntis.com"
-  var SCHOOL = "htl3r"
-  var USER = "htl3r"
-  var PASSWORD = "htl3r"
+  var SCHOOL = ""
+  var USER = ""
+  var PASSWORD = ""
 
 
   def index = Action{
