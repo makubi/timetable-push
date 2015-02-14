@@ -14,5 +14,9 @@ libraryDependencies ++= Seq(
   jdbc,
   anorm,
   cache,
-  ws
+  ws,
+  "net.debasishg" %% "redisclient" % "2.14",
+  "com.github.nscala-time" %% "nscala-time" % "1.8.0",
+  "org.scala-lang.modules" %% "scala-pickling" % "0.10.0",
+  "org.mindrot" % "jbcrypt" % "0.3m"
 )

@@ -1,14 +1,15 @@
 package controllers
 
+import model.CreateUser
 import play.api.Logger
 import play.api.libs.json.Json
 
 import scala.concurrent.Future
 import play.api.mvc._
-import services.WebUntisService
+import services.{UserService, WebUntisService}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
-class HomeController(webUntisService: WebUntisService) extends Controller {
+class HomeController(webUntisService: WebUntisService, userStorageService: UserService) extends Controller {
 
   val U_SERVER = "https://urania.webuntis.com"
   var SCHOOL = ""
@@ -17,7 +18,11 @@ class HomeController(webUntisService: WebUntisService) extends Controller {
 
 
   def index = Action{
-    Ok(views.html.index())
+    val user = CreateUser("asdf@asd.ie", "topsret")
+
+//    userStorageService.addUser("test@example.com", "123")
+
+    Ok(userStorageService.isLoginValid(user.email, user.password).toString())
   }
 
 
@@ -52,19 +57,18 @@ class HomeController(webUntisService: WebUntisService) extends Controller {
   def WUAuth[A](bp: BodyParser[A], server: String, school: String, user: String, password: String)(f: (Request[A], Seq[String], String) => Future[Result]): Action[A] = {
     Action.async(bp) { request =>
       webUntisService.auth2(server, school, user, password).flatMap(
-          r => {
-            Logger.info(r.allHeaders.toString())
-            r.allHeaders.get("Set-Cookie") match {
-              case Some(cookie) =>{
-                f(request, cookie.distinct, server)
-              }
-              case None => Future{Unauthorized("nee")}
+        r => {
+          Logger.info(r.allHeaders.toString())
+          r.allHeaders.get("Set-Cookie") match {
+            case Some(cookie) => {
+              f(request, cookie.distinct, server)
             }
+            case None => Future {
+              Unauthorized("nee")
+            }
+          }
         }
       )
     }
   }
-
-
-
 }

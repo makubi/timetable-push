@@ -5,89 +5,11 @@
 <html>
     <head>
         <title>@title</title>
-
         <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-
-        <script src="@routes.Assets.at("polymer/bower_components/webcomponentsjs/webcomponents.js")"></script>
-
-        <link rel="import" href="@routes.Assets.at("polymer/bower_components/font-roboto/roboto.html")">
-
-        <link rel="stylesheet" href="@routes.Assets.at("stylesheets/main.css")">
-
-        <link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-shadow/paper-shadow.html")">
-
-        <link rel="import" href="@routes.Assets.at("polymer/bower_components/core-collapse/core-collapse.html")">
-
-        @polymer.schoolsearch()
-        @polymer.login()
-        @polymer.list()
-
     </head>
 
     <body unresolved>
-
-        <paper-shadow z="2" style="bottom:32px;" >
-            <core-collapse id="collapseLists" opened="false" style="background: #E5E5E5;">
-                <div around-justified horizontal layout id="listContainer">
-                </div>
-            </core-collapse>
-        </paper-shadow>
-
-        <paper-shadow z="2" style="bottom:16px;">
-            <core-collapse id="collapseLogin" opened="false">
-                <school-login id="schoollogin" />
-            </core-collapse>
-        </paper-shadow>
-
-        <paper-shadow z="2">
-            <core-collapse id="collapseSchoolSearch" opened="true">
-                <school-search id="schoolsearch" />
-            </core-collapse>
-        </paper-shadow>
-
-        <script type="text/javascript">
-
-            var loginOpened = false;
-            var listOpened = false;
-
-            var container  = document.querySelector('#schoolsearch');
-
-            container.addEventListener('schoolSelected', function(school, e, f) {
-                document.querySelector('#schoollogin').school = JSON.parse(school.detail);
-                if(!loginOpened){
-                    document.querySelector('#collapseLogin').toggle();
-                    loginOpened = true;
-                }
-                if(listOpened){
-                    listOpened = false;
-                    document.querySelector("#collapseLists" ).toggle();
-                }
-            });
-
-            document.querySelector('#schoollogin').addEventListener("listsLoaded", function(data, e, f){
-                var lists = data.detail;
-                var container = document.getElementById('listContainer');
-                container.innerHTML = "";
-                for(var i in lists){
-
-                    var list = new MasterList();
-
-                    var item = lists[i];
-                    list.data = item;
-                    console.log(item);
-                        container.appendChild(list);
-                    }
-                    if(!listOpened){
-                        document.querySelector("#collapseLists" ).toggle();
-                        listOpened = true;
-                    }
-            });
-
-            //var mockSchool = {"address":"2000 Stockerau,  ","server":"kirke.webuntis.com","displayName":"Demo","loginName":"kbt"};
-            //document.querySelector('#schoollogin' ).school = mockSchool;
-
-
-        </script>
+        @content
     </body>
 
 </html>
