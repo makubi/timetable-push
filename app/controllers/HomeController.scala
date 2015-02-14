@@ -21,8 +21,8 @@ class HomeController(webUntisService: WebUntisService) extends Controller {
   }
 
 
-  def getTimetable = WUAuth(parse.anyContent, U_SERVER, SCHOOL, USER, PASSWORD) { (request, authCookie, server) =>
-    webUntisService.getTimetable(U_SERVER, authCookie, 1, 287, 20141208).map {
+  def getTimetable(server: String, school: String, user: String, password: String, elementType: Int, elementId: Int, date: Int = 20150209) = WUAuth(parse.anyContent, U_SERVER, SCHOOL, USER, PASSWORD) { (request, authCookie, server) =>
+    webUntisService.getTimetable(U_SERVER, authCookie, elementType, elementId, date).map {
       timetable => Ok(timetable.body)
     }
   }
@@ -49,17 +49,17 @@ class HomeController(webUntisService: WebUntisService) extends Controller {
     )
   }
 
-  def WUAuth[A](bp: BodyParser[A], server: String, school: String, user: String, password: String)(f: (Request[A], String, String) => Future[Result]): Action[A] = {
+  def WUAuth[A](bp: BodyParser[A], server: String, school: String, user: String, password: String)(f: (Request[A], Seq[String], String) => Future[Result]): Action[A] = {
     Action.async(bp) { request =>
       webUntisService.auth2(server, school, user, password).flatMap(
-        r => {
-          r.header("Set-Cookie") match{
-            case Some(x) => {
-              Logger.info(s"Auth Cookie: ${x}")
-              f(request, x, server)
+          r => {
+            Logger.info(r.allHeaders.toString())
+            r.allHeaders.get("Set-Cookie") match {
+              case Some(cookie) =>{
+                f(request, cookie.distinct, server)
+              }
+              case None => Future{Unauthorized("nee")}
             }
-            case None => Future{Unauthorized("nee")}
-          }
         }
       )
     }

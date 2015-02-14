@@ -11,6 +11,8 @@ POST        /search                   @controllers.HomeController.schoolSearch(s
 
 POST        /loadLists                @controllers.HomeController.loadLists(server: String, school: String, user: String, password: String)
 
+POST        /loadTimetable            @controllers.HomeController.getTimetable(server: String, school: String, user: String, password: String, elementType: Int, elementId: Int)
+
 #GET        /loadLists                @controllers.HomeController.loadLists()
 
 # Map static resources from the /public folder to the /assets URL path

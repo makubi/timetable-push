@@ -4,7 +4,7 @@ package services
 class WebUntisService(network: Network) {
 
 
-  def getTimetable(serverUrl: String, cookie: String, elementType: Int, elementId: Int, date: Int) = {
+  def getTimetable(serverUrl: String, cookie: Seq[String], elementType: Int, elementId: Int, date: Int) = {
     network.getTimetable(serverUrl, cookie, elementType, elementId, date)
   }
 
@@ -12,7 +12,7 @@ class WebUntisService(network: Network) {
     network.authenticate(serverUrl, school, username, password)
   }
 
-  def getList(serverUrl: String, authCookie: String, elementType: Int) = {
+  def getList(serverUrl: String, authCookie: Seq[String], elementType: Int) = {
     network.getList(serverUrl, authCookie, elementType)
   }
 
