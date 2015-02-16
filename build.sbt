@@ -15,8 +15,9 @@ libraryDependencies ++= Seq(
   anorm,
   cache,
   ws,
-  "net.debasishg" %% "redisclient" % "2.14",
-  "com.github.nscala-time" %% "nscala-time" % "1.8.0",
-  "org.scala-lang.modules" %% "scala-pickling" % "0.10.0",
+  "org.mongodb" %% "casbah" % "2.8.0",
+  "joda-time" % "joda-time" % "2.7",
+  "org.joda" % "joda-convert" % "1.7",
+  "com.novus" %% "salat" % "1.9.9",
   "org.mindrot" % "jbcrypt" % "0.3m"
 )

@@ -1,6 +1,6 @@
 package controllers
 
-import model.CreateUser
+import model.User
 import play.api.Logger
 import play.api.libs.json.Json
 
@@ -9,6 +9,8 @@ import play.api.mvc._
 import services.{UserService, WebUntisService}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
+import scala.util.Random
+
 class HomeController(webUntisService: WebUntisService, userStorageService: UserService) extends Controller {
 
   val U_SERVER = "https://urania.webuntis.com"
@@ -16,13 +18,14 @@ class HomeController(webUntisService: WebUntisService, userStorageService: UserS
   var USER = ""
   var PASSWORD = ""
 
-
   def index = Action{
-    val user = CreateUser("asdf@asd.ie", "topsret")
+    //Ok(userStorageService.getAllUser().toString)
 
-//    userStorageService.addUser("test@example.com", "123")
+    userStorageService.addUser(s"test${Random.nextInt()}@example.com", "123")
+//    Ok(userStorageService.isLoginValid("test@example.com", "312").toString())
 
-    Ok(userStorageService.isLoginValid(user.email, user.password).toString())
+    val user = userStorageService.getAllUser()
+    Ok(user.map(_.email).foldLeft("")(_ + "\n" + _))
   }
 
 
