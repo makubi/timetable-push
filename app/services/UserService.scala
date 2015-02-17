@@ -2,7 +2,6 @@ package services
 
 import model.User
 import org.mindrot.jbcrypt.BCrypt
-import play.api.Logger
 import scaldi.{Injector, Injectable}
 import storage.UserStorage
 
@@ -17,7 +16,6 @@ trait UserService{
 class UserServiceImpl(implicit inj: Injector) extends UserService with Injectable {
 
   val storage = inject[UserStorage]
-  Logger.info("----------------- init UserService")
 
   override def addUser(email: String, password: String): Boolean = {
     this.synchronized{
