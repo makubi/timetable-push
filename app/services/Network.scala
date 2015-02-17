@@ -5,9 +5,11 @@ import play.api.libs.json.Json
 
 import play.api.libs.ws._
 
+import scala.concurrent.Future
+
 class Network {
 
-  def getTimetable(serverUrl: String, authCookie: String, elementType: Int, elementId: Int, date: Int) = {
+  def getTimetable(serverUrl: String, authCookie: Seq[String], elementType: Int, elementId: Int, date: Int) = {
     val form = Map(
       "ajaxCommand" -> Seq("getWeeklyTimetable"),
       "elementType" -> Seq(s"${elementType}"),
@@ -17,7 +19,7 @@ class Network {
     doTimetableRequest(serverUrl, authCookie, form)
   }
 
-  def getList(serverUrl: String, authCookie: String, elementType: Int) = {
+  def getList(serverUrl: String, authCookie: Seq[String], elementType: Int) = {
     val form = Map(
       "ajaxCommand" -> Seq("getPageConfig"),
       "type" -> Seq(s"${elementType}")
@@ -26,7 +28,7 @@ class Network {
   }
 
   def schoolSearch(searchParams: String) = {
-    var url = "https://query.webuntis.com/schoolquery/"
+    val url = "https://query.webuntis.com/schoolquery/"
     val body = Json.obj(
       "jsonrpc" -> "2.0",
       "method" -> "searchSchool",
@@ -40,7 +42,7 @@ class Network {
     WS.url(url).post(body)
   }
 
-  def authenticate(serverUrl: String, school: String, username: String, password: String)  ={
+  def authenticate(serverUrl: String, school: String, username: String, password: String): Future[WSResponse] = {
     val url = s"https://${serverUrl}/WebUntis/j_spring_security_check?request.preventCache=${System.currentTimeMillis()}"
 
     val form = Map(
@@ -53,11 +55,11 @@ class Network {
   }
 
 
-  def doTimetableRequest(serverUrl: String, authCookie: String, requestParams: Map[String, Seq[String]]) = {
+  def doTimetableRequest(serverUrl: String, authCookie: Seq[String], requestParams: Map[String, Seq[String]]): Future[WSResponse] = {
     val urlAppendix = "/WebUntis/Timetable.do"
     val url = s"https://${serverUrl+urlAppendix}?request.preventCache=${System.currentTimeMillis()}"
-    val header = ("Cookie" -> authCookie)
-    WS.url(url).withHeaders(header).post(requestParams)
+    val cookie = authCookie.foldRight("")((a,b) => a  + (if(!b.isEmpty || !a.isEmpty) ";" else "") + b)
+    WS.url(url).withHeaders("Cookie" -> cookie).post(requestParams)
   }
 
 }

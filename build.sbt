@@ -11,8 +11,12 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala, SbtWeb)
 scalaVersion := "2.11.4"
 
 libraryDependencies ++= Seq(
-  jdbc,
-  anorm,
-  cache,
-  ws
+  ws,
+  "org.scaldi" %% "scaldi-play" % "0.5.3",
+  "org.scaldi" %% "scaldi-akka" % "0.5.3",
+  "org.mongodb" %% "casbah" % "2.8.0",
+  "joda-time" % "joda-time" % "2.7",
+  "org.joda" % "joda-convert" % "1.7",
+  "com.novus" %% "salat" % "1.9.9",
+  "org.mindrot" % "jbcrypt" % "0.3m"
 )

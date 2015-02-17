@@ -33,3 +33,4 @@ RUNNING_PID
 .settings
 
 /public/polymer/bower_components/**
+dump.rdb

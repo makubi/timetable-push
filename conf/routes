@@ -5,13 +5,27 @@
 # Home page
 GET         /                         @controllers.HomeController.index
 
-GET         /list/:elementType        @controllers.HomeController.getList(elementType: Int)
+GET         /user                     @controllers.UserController.index
 
-POST        /search                   @controllers.HomeController.schoolSearch(searchParam: String)
 
-POST        /loadLists                @controllers.HomeController.loadLists(server: String, school: String, user: String, password: String)
+# auth
+GET         /u/login                  @controllers.AuthController.login
+GET         /u/logout                 @controllers.AuthController.logout
+POST        /u/auth                   @controllers.AuthController.authenticate
 
-#GET        /loadLists                @controllers.HomeController.loadLists()
+
+#
+#
+#GET         /list/:elementType        @controllers.HomeController.getList(elementType: Int)
+#
+#POST        /search                   @controllers.HomeController.schoolSearch(searchParam: String)
+#
+#POST        /loadLists                @controllers.HomeController.loadLists(server: String, school: String, user: String, password: String)
+#
+#POST        /loadTimetable            @controllers.HomeController.getTimetable(server: String, school: String, user: String, password: String, elementType: Int, elementId: Int)
+#
+##GET        /loadLists                @controllers.HomeController.loadLists()
+#
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file             controllers.Assets.at(path="/public", file)
