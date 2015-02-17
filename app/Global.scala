@@ -1,31 +1,27 @@
-import com.mongodb.casbah.MongoClient
-import com.mongodb.casbah.commons.conversions.scala.RegisterJodaTimeConversionHelpers
-import play.api.{GlobalSettings}
-import services.{UserService, WebUntisService, Network}
-import controllers._
-import storage.UserStorage
+import java.util.concurrent.TimeUnit
+
+import actors.TimedActor
+import akka.actor.Props
+import modules._
+import play.api.libs.concurrent.Akka
+import play.api.{Application, GlobalSettings}
+import scaldi.Injector
+import scaldi.play.ScaldiSupport
+import play.api.Play.current
+import scala.concurrent.ExecutionContext.Implicits.global
+
+import scala.concurrent.duration.FiniteDuration
 
 
-object Global extends GlobalSettings {
+object Global extends GlobalSettings with ScaldiSupport{
 
+  override def applicationModule: Injector = new ControllerModule :: new UserModule :: new MongoDbModule :: new NetworkModule :: new WebUntisModule :: new StorageModule
 
-//  lazy val redisConnection = new RedisClient("localhost", 6379)
-  lazy val mongoClient = MongoClient("localhost", 27017)("untiscrawler")
-  RegisterJodaTimeConversionHelpers()
+  override def onStart(app: Application): Unit = {
+    super.onStart(app)
 
-  lazy val userStorage = new UserStorage(mongoClient)
-  lazy val userStorageService = new UserService(userStorage)
-
-  lazy val network = new Network
-  lazy val webuntisService = new WebUntisService(network)
-
-  lazy val controllerSingletons = Map[Class[_], AnyRef](
-    (classOf[HomeController] -> new HomeController(webuntisService, userStorageService)),
-    (classOf[UserController] -> new UserController(userStorageService)),
-    (classOf[AuthController] -> new AuthController(userStorageService))
-  )
-
-  override def getControllerInstance[A](controllerClass: Class[A]): A = {
-    controllerSingletons(controllerClass).asInstanceOf[A]
+    val timedActor = Akka.system.actorOf(Props[TimedActor])
+    Akka.system.scheduler.schedule(FiniteDuration.apply(10,TimeUnit.SECONDS), FiniteDuration.apply(1,TimeUnit.SECONDS), timedActor, "ping")
   }
+
 }

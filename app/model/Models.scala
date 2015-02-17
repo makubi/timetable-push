@@ -10,13 +10,18 @@ object User{
   final val EMAIL_KEY = "email"
   final val PASSWORD_KEY = "password"
   final val ID_KEY = "_id"
-  final val DATETIME_KEY = "dateTime"
+  final val TIMESTAMP_CREATED_KEY = "dateTime"
+  final val ACTIVATED_BY_USER_KEY = "activatedByUser"
+  final val ACTIVATED_BY_ADMIN_KEY = "activatedByAdmin"
 }
 
 case class User(@Key(User.EMAIL_KEY)      email: String,
                 @Key(User.PASSWORD_KEY)   password: String,
                 @Key(User.ID_KEY)         userId: ObjectId,
-                @Key(User.DATETIME_KEY)   dateTime: DateTime)
+                @Key(User.TIMESTAMP_CREATED_KEY)   timeStampCreated: DateTime,
+                @Key(User.ACTIVATED_BY_USER_KEY)   activatedByUser: Boolean = false,
+                @Key(User.ACTIVATED_BY_ADMIN_KEY)  activatedByAdmin: Boolean = false
+)
 
 object UntisConfig{
   final val DOCUMENT = "untisconfig"

@@ -1,12 +1,15 @@
 package controllers
 
 import play.api.mvc.{Security, Action, Controller}
+import scaldi.{Injector, Injectable}
 import services.UserService
 import play.api.data.Forms._
 import play.api.data.Form
 import views.html
 
-class AuthController(userService: UserService) extends Controller{
+class AuthController(implicit inj: Injector) extends Controller with Injectable{
+
+  val userService: UserService = inject[UserService]
 
   val loginForm = Form(
     tuple(

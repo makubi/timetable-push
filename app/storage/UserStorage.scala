@@ -1,6 +1,5 @@
 package storage
 
-
 import com.mongodb.casbah.MongoDB
 import com.mongodb.casbah.commons.MongoDBObject
 import com.novus.salat.dao.SalatDAO
@@ -8,10 +7,14 @@ import model.User
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
 import model.mongoContext._ //we need this context ... do not delete!!!
+import scaldi.{Injector, Injectable}
+
 
 import com.novus.salat.global._
 
-class UserStorage(mongoDb: MongoDB) {
+class UserStorage(implicit inj: Injector) extends Injectable{
+
+  val mongoDb: MongoDB = inject[MongoDB]
 
   object UserDAO extends SalatDAO[User, ObjectId](mongoDb(User.DOCUMENT))
 

@@ -1,17 +1,21 @@
 package controllers
 
-import model.User
 import play.api.Logger
 import play.api.libs.json.Json
+import scaldi.{Injector, Injectable}
 
 import scala.concurrent.Future
 import play.api.mvc._
 import services.{UserService, WebUntisService}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
+
 import scala.util.Random
 
-class HomeController(webUntisService: WebUntisService, userStorageService: UserService) extends Controller {
+class HomeController(implicit inj: Injector) extends Controller with Injectable{
+
+  val webUntisService: WebUntisService = inject[WebUntisService]
+  val userStorageService: UserService = inject[UserService]
 
   val U_SERVER = "https://urania.webuntis.com"
   var SCHOOL = ""
@@ -25,7 +29,7 @@ class HomeController(webUntisService: WebUntisService, userStorageService: UserS
 //    Ok(userStorageService.isLoginValid("test@example.com", "312").toString())
 
     val user = userStorageService.getAllUser()
-    Ok(user.map(_.email).foldLeft("")(_ + "\n" + _))
+    Ok(user.map(_.toString()).foldLeft("")(_ + "\n" + _))
   }
 
 

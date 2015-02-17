@@ -1,8 +1,11 @@
 package services
 
+import scaldi.{Injector, Injectable}
 
-class WebUntisService(network: Network) {
 
+class WebUntisService(implicit inj: Injector) extends Injectable{
+
+  val network = inject[Network]
 
   def getTimetable(serverUrl: String, cookie: Seq[String], elementType: Int, elementId: Int, date: Int) = {
     network.getTimetable(serverUrl, cookie, elementType, elementId, date)
