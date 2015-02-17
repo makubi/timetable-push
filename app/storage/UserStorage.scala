@@ -9,7 +9,6 @@ import org.joda.time.DateTime
 import model.mongoContext._ //we need this context ... do not delete!!!
 import scaldi.{Injector, Injectable}
 
-
 import com.novus.salat.global._
 
 class UserStorage(implicit inj: Injector) extends Injectable{
@@ -18,7 +17,7 @@ class UserStorage(implicit inj: Injector) extends Injectable{
 
   object UserDAO extends SalatDAO[User, ObjectId](mongoDb(User.DOCUMENT))
 
-  def addUser(email: String, password: String) {
+  def addUser(email: String, password: String) = {
       val u = User(email, password, new ObjectId(),DateTime.now())
       UserDAO.insert(u)
   }

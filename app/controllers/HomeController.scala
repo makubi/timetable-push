@@ -40,13 +40,13 @@ class HomeController(implicit inj: Injector) extends Controller with Injectable{
   }
 
   def getList(elementType: Int) = WUAuth(parse.anyContent, U_SERVER, SCHOOL, USER, PASSWORD){ (request, authCookie, server) =>
-    webUntisService.getList(server, authCookie, elementType).map(
+    webUntisService.getElementList(server, authCookie, elementType).map(
       result => Ok(result.body)
     )
   }
 
   def loadLists(server: String = U_SERVER, school: String = SCHOOL, user: String = USER, password: String = PASSWORD) = WUAuth(parse.anyContent, server, school, user, password) {  (request, authCookie, server) =>
-    val lists = (1 to 4).map(webUntisService.getList(server, authCookie, _))
+    val lists = (1 to 4).map(webUntisService.getElementList(server, authCookie, _))
     Future.sequence(lists).map(
       response => {
         val data = response.map(e => Json.parse(e.body))
@@ -56,14 +56,14 @@ class HomeController(implicit inj: Injector) extends Controller with Injectable{
   }
 
   def schoolSearch(searchParam: String) = Action.async{
-    webUntisService.schoolSearch(searchParam).map(
+    webUntisService.doSchoolSearch(searchParam).map(
       result => Ok(result.body)
     )
   }
 
   def WUAuth[A](bp: BodyParser[A], server: String, school: String, user: String, password: String)(f: (Request[A], Seq[String], String) => Future[Result]): Action[A] = {
     Action.async(bp) { request =>
-      webUntisService.auth2(server, school, user, password).flatMap(
+      webUntisService.doAuthentication( server, school, user, password).flatMap(
         r => {
           Logger.info(r.allHeaders.toString())
           r.allHeaders.get("Set-Cookie") match {

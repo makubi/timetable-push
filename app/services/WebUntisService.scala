@@ -1,9 +1,18 @@
 package services
 
+import play.api.libs.ws.WSResponse
 import scaldi.{Injector, Injectable}
 
+import scala.concurrent.Future
 
-class WebUntisService(implicit inj: Injector) extends Injectable{
+trait WebUntisService{
+  def getTimetable(serverUrl: String, cookie: Seq[String], elementType: Int, elementId: Int, date: Int): Future[WSResponse]
+  def doAuthentication(serverUrl: String, school: String, username: String, password: String): Future[WSResponse]
+  def getElementList(serverUrl: String, authCookie: Seq[String], elementType: Int): Future[WSResponse]
+  def doSchoolSearch(searchParams: String): Future[WSResponse]
+}
+
+class WebUntisServiceImpl(implicit inj: Injector) extends WebUntisService with Injectable{
 
   val network = inject[Network]
 
@@ -11,15 +20,15 @@ class WebUntisService(implicit inj: Injector) extends Injectable{
     network.getTimetable(serverUrl, cookie, elementType, elementId, date)
   }
 
-  def auth2(serverUrl: String, school: String, username: String, password: String) = {
+  def doAuthentication(serverUrl: String, school: String, username: String, password: String) = {
     network.authenticate(serverUrl, school, username, password)
   }
 
-  def getList(serverUrl: String, authCookie: Seq[String], elementType: Int) = {
+  def getElementList(serverUrl: String, authCookie: Seq[String], elementType: Int) = {
     network.getList(serverUrl, authCookie, elementType)
   }
 
-  def schoolSearch(searchParams: String) = {
+  def doSchoolSearch(searchParams: String) = {
     network.schoolSearch(searchParams)
   }
 

@@ -24,17 +24,20 @@ object User{
 }
 
 case class UntisConfig(
-                        @Key(User.ID_KEY)                  userId: ObjectId,
+                        @Key(UntisConfig.ID_KEY)           configId: ObjectId,
+                        @Key(UntisConfig.USER_ID_KEY)      userId: ObjectId,
                         @Key(UntisConfig.COOKIE_KEY)       cookie: String,
                         @Key(UntisConfig.URL_KEY)          url: String,
                         @Key(UntisConfig.EXPIRE_DATE)      expireDate: DateTime,
                         @Key(UntisConfig.ELEMENT_TYPE_KEY) elementType: Int,
                         @Key(UntisConfig.ELEMENT_ID_KEY)   elmentId: Int,
-                        @Key(UntisConfig.USER_KEY)         userName: Option[String],
-                        @Key(UntisConfig.PASSWORD_KEY)     password: Option[String]
+                        @Key(UntisConfig.USER_KEY)         userName: Option[String] = None,
+                        @Key(UntisConfig.PASSWORD_KEY)     password: Option[String] = None
                         )
 
 object UntisConfig{
+  final val ID_KEY = "_id"
+  final val USER_ID_KEY = "uid"
   final val DOCUMENT = "untisconfig"
   final val COOKIE_KEY = "cookie"
   final val EXPIRE_DATE = "expireDate"

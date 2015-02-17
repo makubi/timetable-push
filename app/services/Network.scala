@@ -55,7 +55,7 @@ class Network {
   }
 
 
-  def doTimetableRequest(serverUrl: String, authCookie: Seq[String], requestParams: Map[String, Seq[String]]) = {
+  def doTimetableRequest(serverUrl: String, authCookie: Seq[String], requestParams: Map[String, Seq[String]]): Future[WSResponse] = {
     val urlAppendix = "/WebUntis/Timetable.do"
     val url = s"https://${serverUrl+urlAppendix}?request.preventCache=${System.currentTimeMillis()}"
     val cookie = authCookie.foldRight("")((a,b) => a  + (if(!b.isEmpty || !a.isEmpty) ";" else "") + b)

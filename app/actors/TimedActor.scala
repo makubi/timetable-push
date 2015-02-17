@@ -8,10 +8,14 @@ import akka.util.Timeout
 import play.api.Logger
 import play.api.libs.concurrent.Akka
 import play.api.Play.current
+import scaldi.Injector
+import scaldi.akka.AkkaInjectable
+import services.UserService
 
 import scala.concurrent.duration.FiniteDuration
 
-class TimedActor extends Actor{
+class TimedActor(implicit inj: Injector) extends Actor with AkkaInjectable{
+  val userService: UserService = inject[UserService]
 
   var i = 0;
   val doSomeStuff = Akka.system.actorOf(Props[DoSomeStuffActor])
@@ -19,13 +23,9 @@ class TimedActor extends Actor{
 
   override def receive: Receive = {
     case "ping" => {
-      (1 to 2).foreach{j =>
-        if(i < 500) {
-//          Logger.info(s"Ask Actor No. $i")
-          doSomeStuff ? s"${i}"
-        }
-        i = i + 1
-      }
+      val user = userService.getAllUser()
+      Logger.info(user(i % user.size).toString)
+      i = i + 1;
     }
     case _ =>
   }
