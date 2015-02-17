@@ -24,7 +24,7 @@ class TimedActor(implicit inj: Injector) extends Actor with AkkaInjectable{
   override def receive: Receive = {
     case "ping" => {
       val user = userService.getAllUser()
-      Logger.info(user(i % user.size).toString)
+      //Logger.info(user(i % user.size).toString)
       i = i + 1;
     }
     case _ =>
