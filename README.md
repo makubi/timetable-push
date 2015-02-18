@@ -1,4 +1,4 @@
-# UntisCrawler
+# timetable-push
 
 - Install Node.js
 - Install bower
