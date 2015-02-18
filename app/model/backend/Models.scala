@@ -1,8 +1,7 @@
-package model
+package model.backend
 
 import com.novus.salat.annotations.Key
 import org.bson.types.ObjectId
-
 import org.joda.time.DateTime
 
 case class User(@Key(User.EMAIL_KEY)      email: String,
@@ -23,19 +22,19 @@ object User{
   final val ACTIVATED_BY_ADMIN_KEY = "activatedByAdmin"
 }
 
-case class UntisConfig(
-                        @Key(UntisConfig.ID_KEY)           configId: ObjectId,
-                        @Key(UntisConfig.USER_ID_KEY)      userId: ObjectId,
-                        @Key(UntisConfig.COOKIE_KEY)       cookie: String,
-                        @Key(UntisConfig.URL_KEY)          url: String,
-                        @Key(UntisConfig.EXPIRE_DATE)      expireDate: DateTime,
-                        @Key(UntisConfig.ELEMENT_TYPE_KEY) elementType: Int,
-                        @Key(UntisConfig.ELEMENT_ID_KEY)   elmentId: Int,
-                        @Key(UntisConfig.USER_KEY)         userName: Option[String] = None,
-                        @Key(UntisConfig.PASSWORD_KEY)     password: Option[String] = None
+case class TimetableConfig(
+                        @Key(TimetableConfig.ID_KEY)           configId: ObjectId,
+                        @Key(TimetableConfig.USER_ID_KEY)      userId: ObjectId,
+                        @Key(TimetableConfig.COOKIE_KEY)       cookie: String,
+                        @Key(TimetableConfig.URL_KEY)          url: String,
+                        @Key(TimetableConfig.EXPIRE_DATE)      expireDate: DateTime,
+                        @Key(TimetableConfig.ELEMENT_TYPE_KEY) elementType: Int,
+                        @Key(TimetableConfig.ELEMENT_ID_KEY)   elementId: Int,
+                        @Key(TimetableConfig.USER_KEY)         userName: Option[String] = None,
+                        @Key(TimetableConfig.PASSWORD_KEY)     password: Option[String] = None
                         )
 
-object UntisConfig{
+object TimetableConfig{
   final val ID_KEY = "_id"
   final val USER_ID_KEY = "uid"
   final val DOCUMENT = "untisconfig"

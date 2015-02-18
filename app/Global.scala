@@ -21,7 +21,8 @@ object Global extends GlobalSettings with ScaldiSupport with AkkaInjectable{
                                         new ServiceModule ::
                                         new MongoDbModule ::
                                         new NetworkModule ::
-                                        new StorageModule
+                                        new StorageModule ::
+                                        new ProviderModule
 
   override def onStart(app: Application): Unit = {
     super.onStart(app)

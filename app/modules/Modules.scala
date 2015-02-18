@@ -5,20 +5,26 @@ import akka.actor.ActorSystem
 import com.mongodb.casbah.commons.conversions.scala.RegisterJodaTimeConversionHelpers
 import com.mongodb.casbah.{MongoClient, MongoDB}
 import controllers.{AuthController, UserController, HomeController}
+import provider.{UserProviderImpl, UserProvider}
 import scaldi.Module
 import scaldi.play.condition._
 import services._
-import storage.{UntisConfigStorage, UserStorage}
+import storage.{TimetableConfigStorage, UserStorage}
 
 
 class ServiceModule extends Module{
   bind [UserService] when (inDevMode or inTestMode or inProdMode) to new UserServiceImpl
+  bind [TimetableConfigService] when (inDevMode or inTestMode or inProdMode) to new TimetableConfigServiceImpl
   bind [WebUntisService] when (inDevMode or inTestMode or inProdMode) to new WebUntisServiceImpl
+}
+
+class ProviderModule extends Module{
+  bind [UserProvider] when (inDevMode or inTestMode or inProdMode) to new UserProviderImpl
 }
 
 class StorageModule extends Module{
   bind [UserStorage] when (inDevMode or inTestMode or inProdMode) to new UserStorage
-  bind [UntisConfigStorage] when (inDevMode or inTestMode or inProdMode) to new UntisConfigStorage
+  bind [TimetableConfigStorage] when (inDevMode or inTestMode or inProdMode) to new TimetableConfigStorage
 }
 
 class MongoDbModule extends Module{

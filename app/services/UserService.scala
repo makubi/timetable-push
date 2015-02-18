@@ -1,6 +1,6 @@
 package services
 
-import model.User
+import model.backend.User
 import org.mindrot.jbcrypt.BCrypt
 import scaldi.{Injector, Injectable}
 import storage.UserStorage
@@ -11,6 +11,8 @@ trait UserService{
   def getUserByEmail(email: String): Option[User]
   def isLoginValid(email: String, password: String): Boolean
   def getAllUser(): List[User]
+  def getActivatedUser(): List[User]
+  def setUserActivated(user: User)
 }
 
 class UserServiceImpl(implicit inj: Injector) extends UserService with Injectable {
@@ -44,4 +46,11 @@ class UserServiceImpl(implicit inj: Injector) extends UserService with Injectabl
     storage.getAllUser
   }
 
+  override def getActivatedUser(): List[User] = {
+    storage.getActivatedUser()
+  }
+
+  override def setUserActivated(user: User): Unit = {
+    storage.updateUser(user.copy(activatedByAdmin = true, activatedByUser = true))
+  }
 }

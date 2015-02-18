@@ -6,16 +6,16 @@ import scaldi.{Injector, Injectable}
 
 import scala.concurrent.Future
 import play.api.mvc._
-import services.{UserService, WebUntisService}
+import services.{TimetableConfigService, UserService, WebUntisService}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 
-import scala.util.Random
 
 class HomeController(implicit inj: Injector) extends Controller with Injectable{
 
   val webUntisService: WebUntisService = inject[WebUntisService]
   val userStorageService: UserService = inject[UserService]
+  val configService: TimetableConfigService = inject[TimetableConfigService]
 
   val U_SERVER = "https://urania.webuntis.com"
   var SCHOOL = ""
@@ -25,8 +25,11 @@ class HomeController(implicit inj: Injector) extends Controller with Injectable{
   def index = Action{
     //Ok(userStorageService.getAllUser().toString)
 
-    userStorageService.addUser(s"test${Random.nextInt()}@example.com", "123")
+  //  userStorageService.addUser(s"test${Random.nextInt()}@example.com", "123")
 //    Ok(userStorageService.isLoginValid("test@example.com", "312").toString())
+    val testUser = userStorageService.getUserByEmail("test1422475145@example.com").get
+
+    userStorageService.setUserActivated(testUser)
 
     val user = userStorageService.getAllUser()
     Ok(user.map(_.toString()).foldLeft("")(_ + "\n" + _))
