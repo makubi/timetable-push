@@ -1,6 +1,6 @@
 package controllers
 
-import play.api.Logger
+import org.joda.time.DateTime
 import play.api.libs.json.Json
 import scaldi.{Injector, Injectable}
 
@@ -24,12 +24,14 @@ class HomeController(implicit inj: Injector) extends Controller with Injectable{
 
   def index = Action{
     //Ok(userStorageService.getAllUser().toString)
+    //userStorageService.addUser(s"test${Random.nextInt()}@example.com", "123")
+    //Ok(userStorageService.isLoginValid("test@example.com", "312").toString())
+    //val testUser = userStorageService.getUserByEmail("test1422475145@example.com").get
+    //userStorageService.setUserActivated(testUser)
 
-  //  userStorageService.addUser(s"test${Random.nextInt()}@example.com", "123")
-//    Ok(userStorageService.isLoginValid("test@example.com", "312").toString())
-    val testUser = userStorageService.getUserByEmail("test1422475145@example.com").get
-
-    userStorageService.setUserActivated(testUser)
+//    userStorageService.addUser("test2@example.com","123")
+//    val u = userStorageService.getUserByEmail("test2@example.com").get
+//    userStorageService.setUserActivated(u)
 
     val user = userStorageService.getAllUser()
     Ok(user.map(_.toString()).foldLeft("")(_ + "\n" + _))
@@ -64,14 +66,14 @@ class HomeController(implicit inj: Injector) extends Controller with Injectable{
     )
   }
 
-  def WUAuth[A](bp: BodyParser[A], server: String, school: String, user: String, password: String)(f: (Request[A], Seq[String], String) => Future[Result]): Action[A] = {
+  def WUAuth[A](bp: BodyParser[A], server: String, school: String, user: String, password: String)(f: (Request[A], String, String) => Future[Result]): Action[A] = {
     Action.async(bp) { request =>
       webUntisService.doAuthentication( server, school, user, password).flatMap(
         r => {
-          Logger.info(r.allHeaders.toString())
           r.allHeaders.get("Set-Cookie") match {
             case Some(cookie) => {
-              f(request, cookie.distinct, server)
+              val cookieString = cookie.distinct.foldRight("")((a,b) => a  + (if(!b.isEmpty || !a.isEmpty) ";" else "") + b)
+              f(request, cookieString, server)
             }
             case None => Future {
               Unauthorized("nee")

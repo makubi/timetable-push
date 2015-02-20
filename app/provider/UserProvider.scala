@@ -1,6 +1,6 @@
 package provider
 
-import model.frontend.{UiTimetableConfig, UiUser, UiUserBundle}
+import model.{UiUserBundle, UiTimetableConfig, UiUser}
 import scaldi.{Injector, Injectable}
 import services.{TimetableConfigService, UserService}
 

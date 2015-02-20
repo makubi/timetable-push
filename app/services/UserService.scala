@@ -1,6 +1,6 @@
 package services
 
-import model.backend.User
+import model.User
 import org.mindrot.jbcrypt.BCrypt
 import scaldi.{Injector, Injectable}
 import storage.UserStorage

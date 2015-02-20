@@ -1,6 +1,4 @@
-package model
-
-import com.novus.salat.{TypeHintFrequency, StringTypeHintStrategy, Context}
+import com.novus.salat.{Context, StringTypeHintStrategy, TypeHintFrequency}
 import play.api.Play
 import play.api.Play.current
 /*
@@ -9,7 +7,7 @@ import play.api.Play.current
   https://github.com/leon/play-salat/blob/master/sample/app/models/mongoContext.scala
 */
 
-package object mongoContext {
+package object storage {
   implicit val context = {
     val context = new Context {
       val name = "global"

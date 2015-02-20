@@ -9,7 +9,7 @@ import scala.concurrent.Future
 
 class Network {
 
-  def getTimetable(serverUrl: String, authCookie: Seq[String], elementType: Int, elementId: Int, date: Int) = {
+  def getTimetable(serverUrl: String, authCookie: String, elementType: Int, elementId: Int, date: Int) = {
     val form = Map(
       "ajaxCommand" -> Seq("getWeeklyTimetable"),
       "elementType" -> Seq(s"${elementType}"),
@@ -19,7 +19,7 @@ class Network {
     doTimetableRequest(serverUrl, authCookie, form)
   }
 
-  def getList(serverUrl: String, authCookie: Seq[String], elementType: Int) = {
+  def getList(serverUrl: String, authCookie: String, elementType: Int) = {
     val form = Map(
       "ajaxCommand" -> Seq("getPageConfig"),
       "type" -> Seq(s"${elementType}")
@@ -43,7 +43,7 @@ class Network {
   }
 
   def authenticate(serverUrl: String, school: String, username: String, password: String): Future[WSResponse] = {
-    val url = s"https://${serverUrl}/WebUntis/j_spring_security_check?request.preventCache=${System.currentTimeMillis()}"
+    val url = s"${serverUrl}/WebUntis/j_spring_security_check?request.preventCache=${System.currentTimeMillis()}"
 
     val form = Map(
       "buttonName" -> Seq("login"),
@@ -55,11 +55,11 @@ class Network {
   }
 
 
-  def doTimetableRequest(serverUrl: String, authCookie: Seq[String], requestParams: Map[String, Seq[String]]): Future[WSResponse] = {
+  def doTimetableRequest(serverUrl: String, authCookie: String, requestParams: Map[String, Seq[String]]): Future[WSResponse] = {
     val urlAppendix = "/WebUntis/Timetable.do"
-    val url = s"https://${serverUrl+urlAppendix}?request.preventCache=${System.currentTimeMillis()}"
-    val cookie = authCookie.foldRight("")((a,b) => a  + (if(!b.isEmpty || !a.isEmpty) ";" else "") + b)
-    WS.url(url).withHeaders("Cookie" -> cookie).post(requestParams)
+    val url = s"${serverUrl+urlAppendix}?request.preventCache=${System.currentTimeMillis()}"
+//    val cookie = authCookie.foldRight("")((a,b) => a  + (if(!b.isEmpty || !a.isEmpty) ";" else "") + b)
+    WS.url(url).withHeaders("Cookie" -> authCookie).post(requestParams)
   }
 
 }

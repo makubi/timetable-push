@@ -6,9 +6,9 @@ import scaldi.{Injector, Injectable}
 import scala.concurrent.Future
 
 trait WebUntisService{
-  def getTimetable(serverUrl: String, cookie: Seq[String], elementType: Int, elementId: Int, date: Int): Future[WSResponse]
+  def getTimetable(serverUrl: String, cookie: String, elementType: Int, elementId: Int, date: Int): Future[WSResponse]
   def doAuthentication(serverUrl: String, school: String, username: String, password: String): Future[WSResponse]
-  def getElementList(serverUrl: String, authCookie: Seq[String], elementType: Int): Future[WSResponse]
+  def getElementList(serverUrl: String, authCookie: String, elementType: Int): Future[WSResponse]
   def doSchoolSearch(searchParams: String): Future[WSResponse]
 }
 
@@ -16,7 +16,7 @@ class WebUntisServiceImpl(implicit inj: Injector) extends WebUntisService with I
 
   val network = inject[Network]
 
-  def getTimetable(serverUrl: String, cookie: Seq[String], elementType: Int, elementId: Int, date: Int) = {
+  def getTimetable(serverUrl: String, cookie: String, elementType: Int, elementId: Int, date: Int) = {
     network.getTimetable(serverUrl, cookie, elementType, elementId, date)
   }
 
@@ -24,7 +24,7 @@ class WebUntisServiceImpl(implicit inj: Injector) extends WebUntisService with I
     network.authenticate(serverUrl, school, username, password)
   }
 
-  def getElementList(serverUrl: String, authCookie: Seq[String], elementType: Int) = {
+  def getElementList(serverUrl: String, authCookie: String, elementType: Int) = {
     network.getList(serverUrl, authCookie, elementType)
   }
 

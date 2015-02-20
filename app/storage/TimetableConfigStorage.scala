@@ -3,11 +3,10 @@ package storage
 import com.mongodb.casbah.MongoDB
 import com.mongodb.casbah.commons.MongoDBObject
 import com.novus.salat.dao.SalatDAO
-import model.backend.TimetableConfig
+import model.TimetableConfig
 import org.bson.types.ObjectId
-import org.joda.time.DateTime
 import scaldi.{Injector, Injectable}
-import model.mongoContext._
+import storage.context
 
 class TimetableConfigStorage(implicit inj: Injector) extends Injectable {
 
@@ -16,14 +15,13 @@ class TimetableConfigStorage(implicit inj: Injector) extends Injectable {
   object UntisConfigDAO extends SalatDAO[TimetableConfig, ObjectId](mongoDb(TimetableConfig.DOCUMENT))
 
   def addConfig(userId: ObjectId,
-                cookie: String,
                 url: String,
-                expireDate: DateTime,
+                school: String,
                 elementType: Int,
                 elementId: Int,
                 userName: Option[String] = None,
                 password: Option[String] = None): Unit ={
-    val config = TimetableConfig(new ObjectId(), userId, cookie, url, expireDate, elementType, elementId, userName, password)
+    val config = TimetableConfig(new ObjectId(), userId, url, school, elementType, elementId, userName, password)
     UntisConfigDAO.insert(config)
   }
 

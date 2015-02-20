@@ -1,12 +1,12 @@
 package services
 
-import model.backend.TimetableConfig
+import model.TimetableConfig
 import org.bson.types.ObjectId
 import scaldi.{Injector, Injectable}
 import storage.TimetableConfigStorage
 
 trait TimetableConfigService  {
-  def addUntisConfig()
+  def addTimetableConfig(userId: ObjectId, url: String, school: String, elementType: Int,elementId: Int,userName: Option[String] = None,password: Option[String] = None)
   def getTimetableConfigByUser(userId: ObjectId): Option[TimetableConfig]
 }
 
@@ -14,8 +14,8 @@ class TimetableConfigServiceImpl(implicit inj: Injector) extends TimetableConfig
   
   val timetableConfigStorage: TimetableConfigStorage = inject[TimetableConfigStorage]
   
-  override def addUntisConfig(): Unit = {
-    //timetableConfigStorage.addConfig()
+  override def addTimetableConfig(userId: ObjectId, url: String, school: String, elementType: Int,elementId: Int,userName: Option[String] = None,password: Option[String] = None): Unit = {
+    timetableConfigStorage.addConfig(userId, url, school, elementType, elementId, userName, password)
   }
 
   override def getTimetableConfigByUser(userId: ObjectId): Option[TimetableConfig] = {

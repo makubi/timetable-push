@@ -4,10 +4,10 @@ import com.mongodb.WriteConcern
 import com.mongodb.casbah.MongoDB
 import com.mongodb.casbah.commons.MongoDBObject
 import com.novus.salat.dao.SalatDAO
-import model.backend.User
+import model.User
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
-import model.mongoContext._ //we need this context ... do not delete!!!
+import storage.context._ //we need this context ... do not delete!!!
 import scaldi.{Injector, Injectable}
 
 import com.novus.salat.global._
