@@ -1,10 +1,14 @@
 package services
 
+import java.util.UUID
+
 import model.User
+import org.joda.time.DateTime
 import org.mindrot.jbcrypt.BCrypt
 import scaldi.{Injector, Injectable}
 import storage.UserStorage
-
+import play.api.db.slick.DB
+import play.api.Play.current
 
 trait UserService{
   def addUser(email: String, password: String): Boolean
@@ -20,12 +24,12 @@ class UserServiceImpl(implicit inj: Injector) extends UserService with Injectabl
   val storage = inject[UserStorage]
 
   override def addUser(email: String, password: String): Boolean = {
-    this.synchronized{
+    DB.withTransaction { implicit session =>
       storage.existsUserWithEmail(email) match{
         case true => false
         case false => {
           val pwdHash = BCrypt.hashpw(password, BCrypt.gensalt())
-          storage.addUser(email, pwdHash)
+          storage.addUser(User(email, pwdHash, UUID.randomUUID(), DateTime.now(),false, false))
           true
         }
       }
@@ -33,24 +37,32 @@ class UserServiceImpl(implicit inj: Injector) extends UserService with Injectabl
   }
 
   override def getUserByEmail(email: String): Option[User] = {
-    storage.getUserByEmail(email)
+    DB.withSession{ implicit  session =>
+      storage.getUserByEmail(email)
+    }
   }
 
   override def isLoginValid(email: String, password: String): Boolean = {
-    getUserByEmail(email).map{ user =>
+    getUserByEmail(email).map { user =>
       BCrypt.checkpw(password, user.password)
     }.getOrElse(false)
   }
 
   override def getAllUser(): List[User] = {
-    storage.getAllUser
+    DB.withSession { implicit session =>
+      storage.getAllUser
+    }
   }
 
   override def getActivatedUser(): List[User] = {
-    storage.getActivatedUser()
+    DB.withSession { implicit session =>
+      storage.getActivatedUser()
+    }
   }
 
   override def setUserActivated(user: User): Unit = {
-    storage.updateUser(user.copy(activatedByAdmin = true, activatedByUser = true))
+    DB.withTransaction { implicit session =>
+      storage.updateUser(user.copy(activatedByAdmin = true, activatedByUser = true))
+    }
   }
 }

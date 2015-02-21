@@ -19,7 +19,6 @@ object Global extends GlobalSettings with ScaldiSupport with AkkaInjectable{
                                         new AkkaModule ::
                                         new ControllerModule ::
                                         new ServiceModule ::
-                                        new MongoDbModule ::
                                         new NetworkModule ::
                                         new StorageModule ::
                                         new ProviderModule
@@ -28,7 +27,7 @@ object Global extends GlobalSettings with ScaldiSupport with AkkaInjectable{
     super.onStart(app)
 
     implicit val system = inject [ActorSystem]
-    Akka.system.scheduler.schedule(FiniteDuration.apply(10,TimeUnit.SECONDS), FiniteDuration.apply(10,TimeUnit.SECONDS),  injectActorRef[TimedActor], "ping")
+    Akka.system.scheduler.schedule(FiniteDuration.apply(10,TimeUnit.SECONDS), FiniteDuration.apply(60,TimeUnit.SECONDS),  injectActorRef[TimedActor], "ping")
   }
 
 }

@@ -28,9 +28,6 @@ class HomeController(implicit inj: Injector) extends Controller with Injectable{
     //val testUser = userStorageService.getUserByEmail("test1422475145@example.com").get
     //userStorageService.setUserActivated(testUser)
 
-//    userStorageService.addUser("test2@example.com","123")
-//    val u = userStorageService.getUserByEmail("test2@example.com").get
-//    userStorageService.setUserActivated(u)
 
     val user = userStorageService.getAllUser()
     Ok(user.map(_.toString()).foldLeft("")(_ + "\n" + _))

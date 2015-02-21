@@ -1,46 +1,52 @@
 package storage
 
-import com.mongodb.WriteConcern
-import com.mongodb.casbah.MongoDB
-import com.mongodb.casbah.commons.MongoDBObject
-import com.novus.salat.dao.SalatDAO
+import java.util.UUID
+
 import model.User
-import org.bson.types.ObjectId
 import org.joda.time.DateTime
-import storage.context._ //we need this context ... do not delete!!!
-import scaldi.{Injector, Injectable}
+import play.api.db.slick.Config.driver.simple._
+import com.github.tototoshi.slick.JdbcJodaSupport._
 
-import com.novus.salat.global._
+class UserTable(tag: Tag) extends Table[User](tag, User.TABLE){
 
-class UserStorage(implicit inj: Injector) extends Injectable{
+  def userId = column[UUID](User.ID_KEY, O.PrimaryKey)
+  def email = column[String](User.EMAIL_KEY, O.NotNull)
+  def password = column[String](User.PASSWORD_KEY, O.NotNull)
+  def timeStampCreate = column[DateTime](User.TIMESTAMP_CREATED_KEY, O.NotNull)
+  def activatedByUser = column[Boolean](User.ACTIVATED_BY_USER_KEY, O.NotNull)
+  def activatedByAdmin = column[Boolean](User.ACTIVATED_BY_ADMIN_KEY, O.NotNull)
 
-  val mongoDb: MongoDB = inject[MongoDB]
+  override def * = (email, password, userId, timeStampCreate, activatedByUser, activatedByAdmin) <> ((User.apply _).tupled, User.unapply)
 
-  object UserDAO extends SalatDAO[User, ObjectId](mongoDb(User.DOCUMENT))
+  def idx = index(User.EMAIL_IDX, email, unique = true)
+}
 
-  def addUser(email: String, password: String) = {
-      val u = User(email, password, new ObjectId(),DateTime.now())
-      UserDAO.insert(u)
+class UserStorage {
+
+  val table = TableQuery[UserTable]
+
+  def addUser(user: User)(implicit session: Session) = {
+    table.insert(user)
   }
 
-  def getUserByEmail(email: String): Option[User] = {
-    UserDAO.findOne(MongoDBObject(User.EMAIL_KEY -> email))
+  def getUserByEmail(email: String)(implicit session: Session): Option[User] = {
+    table.filter(_.email === email).firstOption
   }
 
-  def existsUserWithEmail(email: String): Boolean = {
+  def existsUserWithEmail(email: String)(implicit session: Session): Boolean = {
     getUserByEmail(email).isDefined
   }
 
-  def getAllUser(): List[User] = {
-    UserDAO.find(MongoDBObject.empty).toList
+  def getAllUser()(implicit session: Session): List[User] = {
+    table.list
   }
 
-  def getActivatedUser(): List[User] = {
-    UserDAO.find(MongoDBObject(User.ACTIVATED_BY_ADMIN_KEY -> true, User.ACTIVATED_BY_USER_KEY -> true)).toList
+  def getActivatedUser()(implicit session: Session): List[User] = {
+    table.filter(d => (d.activatedByUser && d.activatedByAdmin)).list
   }
 
-  def updateUser(updatedUser: User) = {
-    UserDAO.update(MongoDBObject(User.ID_KEY -> updatedUser.userId), updatedUser, false, false, new WriteConcern)
+  def updateUser(updatedUser: User)(implicit session: Session) = {
+    table.filter(_.userId === updatedUser.userId).update(updatedUser)
   }
 
 }

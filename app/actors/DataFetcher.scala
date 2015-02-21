@@ -23,7 +23,7 @@ class DataFetcher(implicit inj: Injector) extends Actor with AkkaInjectable{
   def doSomeStuff(uiBundle: UiUserBundle) = {
     val config = uiBundle.uiTimetableConfig
 
-    timetableService.doAuthentication(config.url, config.school, config.userName.get, config.password.get).map{ auth =>
+    timetableService.doAuthentication(config.url, config.school, config.userName, config.password).map{ auth =>
       auth.allHeaders.get("Set-Cookie") match {
         case Some(cookie) => {
           val cookieString = cookie.distinct.foldRight("")((a,b) => a  + (if(!b.isEmpty || !a.isEmpty) ";" else "") + b)

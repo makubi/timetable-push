@@ -1,36 +1,41 @@
 package storage
 
-import com.mongodb.casbah.MongoDB
-import com.mongodb.casbah.commons.MongoDBObject
-import com.novus.salat.dao.SalatDAO
+import java.util.UUID
+
 import model.TimetableConfig
-import org.bson.types.ObjectId
-import scaldi.{Injector, Injectable}
-import storage.context
+import scala.slick.lifted.Tag
+import play.api.db.slick.Config.driver.simple._
 
-class TimetableConfigStorage(implicit inj: Injector) extends Injectable {
+class TimetableConfigTable(tag: Tag) extends Table[TimetableConfig](tag, TimetableConfig.TABLE){
 
-  val mongoDb: MongoDB = inject[MongoDB]
+  def configId = column[UUID](TimetableConfig.ID_KEY, O.PrimaryKey)
+  def userId = column[UUID](TimetableConfig.USER_ID_KEY, O.NotNull)
+  def url = column[String](TimetableConfig.URL_KEY, O.NotNull)
+  def school = column[String](TimetableConfig.SCHOOL_KEY, O.NotNull)
+  def elementType = column[Int](TimetableConfig.ELEMENT_TYPE_KEY, O.NotNull)
+  def elementId = column[Int](TimetableConfig.ELEMENT_ID_KEY, O.NotNull)
+  def userName = column[String](TimetableConfig.USER_KEY, O.NotNull)
+  def password = column[String](TimetableConfig.PASSWORD_KEY, O.NotNull)
 
-  object UntisConfigDAO extends SalatDAO[TimetableConfig, ObjectId](mongoDb(TimetableConfig.DOCUMENT))
+  override def * = (configId, userId, url, school, elementType, elementId, userName, password) <> ((TimetableConfig.apply _).tupled, TimetableConfig.unapply)
 
-  def addConfig(userId: ObjectId,
-                url: String,
-                school: String,
-                elementType: Int,
-                elementId: Int,
-                userName: Option[String] = None,
-                password: Option[String] = None): Unit ={
-    val config = TimetableConfig(new ObjectId(), userId, url, school, elementType, elementId, userName, password)
-    UntisConfigDAO.insert(config)
+  def fk = foreignKey(TimetableConfig.USER_ID_FK, userId, TableQuery[UserTable])(_.userId)
+}
+
+class TimetableConfigStorage{
+
+  val table = TableQuery[TimetableConfigTable]
+
+  def addConfig(timetableConfig: TimetableConfig)(implicit session: Session): Unit ={
+    table.insert(timetableConfig)
   }
 
-  def getConfigById(configId: ObjectId): Option[TimetableConfig] = {
-    UntisConfigDAO.findOne(MongoDBObject(TimetableConfig.USER_ID_KEY -> configId))
+  def getConfigById(configId: UUID)(implicit session: Session): Option[TimetableConfig] = {
+    table.filter(_.configId === configId).firstOption
   }
 
-  def getConfigByUserId(userId: ObjectId): List[TimetableConfig] = {
-    UntisConfigDAO.find(MongoDBObject(TimetableConfig.USER_ID_KEY -> userId)).toList
+  def getConfigByUserId(userId: UUID)(implicit session: Session): Option[TimetableConfig] = {
+    table.filter(_.userId === userId).firstOption
   }
 
 }

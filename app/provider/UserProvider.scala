@@ -1,6 +1,7 @@
 package provider
 
 import model.{UiUserBundle, UiTimetableConfig, UiUser}
+import play.api.Logger
 import scaldi.{Injector, Injectable}
 import services.{TimetableConfigService, UserService}
 

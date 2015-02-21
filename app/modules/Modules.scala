@@ -2,8 +2,6 @@ package modules
 
 import actors.{NotificationActor, AnalystActor, DataFetcher, TimedActor}
 import akka.actor.ActorSystem
-import com.mongodb.casbah.commons.conversions.scala.RegisterJodaTimeConversionHelpers
-import com.mongodb.casbah.{MongoClient, MongoDB}
 import controllers.{AuthController, UserController, HomeController}
 import provider.{TimetableEventProviderImpl, TimetableEventProvider, UserProviderImpl, UserProvider}
 import scaldi.Module
@@ -28,10 +26,6 @@ class StorageModule extends Module{
   bind [UserStorage] when (inDevMode or inTestMode or inProdMode) to new UserStorage
   bind [TimetableConfigStorage] when (inDevMode or inTestMode or inProdMode) to new TimetableConfigStorage
   bind [TimetableEventStorage] when (inDevMode or inTestMode or inProdMode) to new TimetableEventStorage
-}
-
-class MongoDbModule extends Module{
-  bind [MongoDB] when (inDevMode or inTestMode or inProdMode) to MongoClient("localhost", 27017)("untiscrawler") initWith(db => RegisterJodaTimeConversionHelpers())
 }
 
 class NetworkModule extends Module{
