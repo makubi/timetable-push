@@ -34,3 +34,5 @@ RUNNING_PID
 
 /public/polymer/bower_components/**
 dump.rdb
+
+/conf/push.conf
