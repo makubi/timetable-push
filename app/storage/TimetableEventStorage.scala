@@ -1,35 +1,43 @@
 package storage
 
-import com.mongodb.casbah.MongoDB
-import com.mongodb.casbah.commons.MongoDBObject
-import com.novus.salat.dao.SalatDAO
+import java.util.UUID
+
 import model.TimetableEvent
-import org.bson.types.ObjectId
 import org.joda.time.DateTime
-import scaldi.{Injectable, Injector}
-import storage.context
+import play.api.db.slick.Config.driver.simple._
+import com.github.tototoshi.slick.JdbcJodaSupport._
 
 
-class TimetableEventStorage(implicit inj: Injector) extends Injectable {
+class TimetableEventTable(tag: Tag) extends Table[TimetableEvent](tag, TimetableEvent.TABLE){
 
-  val mongoDb: MongoDB = inject[MongoDB]
+  def eventId = column[UUID](TimetableEvent.ID_KEY, O.PrimaryKey)
+  def userId = column[UUID](TimetableEvent.USER_ID_KEY, O.NotNull)
+  def configId = column[UUID](TimetableEvent.CONFIG_ID_KEY, O.NotNull)
+  def createdAt = column[DateTime](TimetableEvent.DATETIME_KEY, O.NotNull)
+  def rawJson = column[String](TimetableEvent.RAW_TIMETABLE_EVENT, O.NotNull, O.DBType("VARCHAR(200000)"))
 
-  object TimetableEventDAO extends SalatDAO[TimetableEvent, ObjectId](mongoDb(TimetableEvent.DOCUMENT))
+  override def * = (eventId, userId, configId, createdAt, rawJson) <> ((TimetableEvent.apply _).tupled, TimetableEvent.unapply)
 
-  def addEvent(userId: ObjectId, configId: ObjectId, createdAt: DateTime, eventDump: String): Unit ={
-    TimetableEventDAO.insert(TimetableEvent(new ObjectId(), userId, configId, createdAt, eventDump))
+  def uFk = foreignKey(TimetableEvent.FK_CONFIG, userId, TableQuery[UserTable])(_.userId)
+  def cFk = foreignKey(TimetableEvent.FK_USER, configId, TableQuery[TimetableConfigTable])(_.configId)
+
+}
+
+class TimetableEventStorage {
+
+  val table = TableQuery[TimetableEventTable]
+
+  def addEvent(event: TimetableEvent)(implicit session: Session): Unit ={
+//    TimetableEvent(new ObjectId(), userId, configId, createdAt, eventDump)
+    table.insert(event)
   }
 
-  def addEvent(timetableEvent: TimetableEvent): Unit = {
-    TimetableEventDAO.insert(timetableEvent)
+  def getEventsByUserAndConfig(userId: UUID, configId: UUID)(implicit session: Session): List[TimetableEvent] = {
+    table.filter(d => (d.userId === userId && d.configId === configId)).list
   }
 
-  def getEventsByUserAndConfig(userId: ObjectId, configId: ObjectId): List[TimetableEvent] = {
-    TimetableEventDAO.find(MongoDBObject(TimetableEvent.USER_ID_KEY -> userId, TimetableEvent.CONFIG_ID_KEY -> configId)).toList
-  }
-
-  def getEventById(eventId: ObjectId): Option[TimetableEvent] = {
-    TimetableEventDAO.findOne(MongoDBObject(TimetableEvent.ID_KEY -> eventId))
+  def getEventById(eventId: UUID)(implicit session: Session): Option[TimetableEvent] = {
+    table.filter(_.eventId === eventId).firstOption
   }
 
 }

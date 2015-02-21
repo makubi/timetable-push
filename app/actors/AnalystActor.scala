@@ -1,8 +1,9 @@
 package actors
 
+import java.util.UUID
+
 import akka.actor.Actor
 import model.{UiTimetableEvent, UiUserBundle, MergedTimetablePeriod}
-import org.bson.types.ObjectId
 import org.joda.time.DateTime
 import play.api.Logger
 import provider.TimetableEventProvider
@@ -25,22 +26,17 @@ class AnalystActor(implicit inj: Injector) extends Actor with AkkaInjectable{
 
     val d = timetableEventProvider.getTimetableEvents(userBundle.uiUser.userId, userBundle.uiTimetableConfig.configId)
     val newPeriods = data.filter(e => !d.map(_.timeTableData).contains(e))
-    val events = newPeriods.map(p => UiTimetableEvent(new ObjectId(), userId, configId, DateTime.now(),p))
+    val events = newPeriods.map(p => UiTimetableEvent(UUID.randomUUID(), userId, configId, DateTime.now(),p))//TODO --> provider
 
     Logger.info(s"${userBundle.uiTimetableConfig.school}: Event count db: ${d.size}")
     Logger.info(s"${userBundle.uiTimetableConfig.school}: Event count nw: ${data.size}")
     Logger.info(s"${userBundle.uiTimetableConfig.school}: Event count diff: ${newPeriods.size}")
 
-    events.isEmpty match{
-      case false => {
-        events.foreach { e =>
-         timetableEventProvider.addTimetableEvent(e)
-        }
-        notificationActor ! (events, userBundle)
+    if(!events.isEmpty){
+      events.foreach { e =>
+        timetableEventProvider.addTimetableEvent(e)
       }
+      notificationActor ! (events, userBundle)
     }
-
   }
-
-
 }
