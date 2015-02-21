@@ -24,21 +24,20 @@ class AnalystActor(implicit inj: Injector) extends Actor with AkkaInjectable{
     val configId = userBundle.uiTimetableConfig.configId
 
     val d = timetableEventProvider.getTimetableEvents(userBundle.uiUser.userId, userBundle.uiTimetableConfig.configId)
-
-    Logger.info(s"${userBundle.uiTimetableConfig.school}: Count db: ${d.size}")
-    Logger.info(s"${userBundle.uiTimetableConfig.school}: Count nw: ${data.size}")
-    val newPeriods = data.filter(e => d.contains(e))
-    Logger.info(s"${userBundle.uiTimetableConfig.school}: Filter size: ${newPeriods.size}")
-
+    val newPeriods = data.filter(e => !d.map(_.timeTableData).contains(e))
     val events = newPeriods.map(p => UiTimetableEvent(new ObjectId(), userId, configId, DateTime.now(),p))
+
+    Logger.info(s"${userBundle.uiTimetableConfig.school}: Event count db: ${d.size}")
+    Logger.info(s"${userBundle.uiTimetableConfig.school}: Event count nw: ${data.size}")
+    Logger.info(s"${userBundle.uiTimetableConfig.school}: Event count diff: ${newPeriods.size}")
 
     events.foreach { e =>
      timetableEventProvider.addTimetableEvent(e)
     }
 
-    Logger.info(s"${userBundle.uiTimetableConfig.school}: Call Notifaction Actor count: ${events.size}")
     notificationActor ! (events, userBundle)
 
   }
+
 
 }

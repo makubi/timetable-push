@@ -1,6 +1,5 @@
 package controllers
 
-import org.joda.time.DateTime
 import play.api.libs.json.Json
 import scaldi.{Injector, Injectable}
 

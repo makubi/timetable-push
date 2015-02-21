@@ -1,6 +1,6 @@
 import sbt._
 
-name := """UntisCrawler"""
+name := """timetable-push"""
 
 version := "1.0-SNAPSHOT"
 
