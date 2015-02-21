@@ -31,11 +31,14 @@ class AnalystActor(implicit inj: Injector) extends Actor with AkkaInjectable{
     Logger.info(s"${userBundle.uiTimetableConfig.school}: Event count nw: ${data.size}")
     Logger.info(s"${userBundle.uiTimetableConfig.school}: Event count diff: ${newPeriods.size}")
 
-    events.foreach { e =>
-     timetableEventProvider.addTimetableEvent(e)
+    events.isEmpty match{
+      case false => {
+        events.foreach { e =>
+         timetableEventProvider.addTimetableEvent(e)
+        }
+        notificationActor ! (events, userBundle)
+      }
     }
-
-    notificationActor ! (events, userBundle)
 
   }
 
