@@ -3,35 +3,25 @@ package controllers
 import play.api.mvc.{Security, Action, Controller}
 import scaldi.{Injector, Injectable}
 import services.UserService
-import play.api.data.Forms._
-import play.api.data.Form
 import views.html
 
 class AuthController(implicit inj: Injector) extends Controller with Injectable{
 
   val userService: UserService = inject[UserService]
+  val forms: Forms = inject[Forms]
 
-  val loginForm = Form(
-    tuple(
-      "username" -> text,
-      "password" -> text
-    ) verifying ("Invalid email or password", result => result match {
-      case (email, password) => userService.isLoginValid(email, password)
-    })
-  )
-
-  def login = Action { implicit request =>
-    request.session.get(Security.username).map { user =>
-      Redirect(routes.UserController.index())
-    }.getOrElse {
-      Ok(html.user(loginForm))
-    }
-  }
+//  def login = Action { implicit request =>
+//    request.session.get(Security.username).map { user =>
+//      Redirect(routes.UserController.userArea)
+//    }.getOrElse {
+//      Redirect(routes.UserController.index)
+//    }
+//  }
 
   def authenticate = Action { implicit request =>
-    loginForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.user(formWithErrors)),
-      user => Redirect(routes.UserController.index).withSession(Security.username -> user._1)
+    forms.loginForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(html.user.start(forms.addUserForm, formWithErrors, 0)),
+      user => Redirect(routes.UserController.area).withSession(Security.username -> user._1)
     )
   }
 

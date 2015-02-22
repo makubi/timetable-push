@@ -3,16 +3,14 @@
 # ~~~~
 
 # Home page
-GET         /                         @controllers.HomeController.index
+GET         /                             @controllers.HomeController.index
 
-GET         /user                     @controllers.UserController.index
+GET         /user/start                   @controllers.UserController.start
+GET         /user/area                    @controllers.UserController.area
+GET         /user/logout                  @controllers.AuthController.logout
 
-
-# auth
-GET         /u/login                  @controllers.AuthController.login
-GET         /u/logout                 @controllers.AuthController.logout
-POST        /u/auth                   @controllers.AuthController.authenticate
-
+POST        /user/auth                    @controllers.AuthController.authenticate
+POST        /user/add                     @controllers.UserController.validateCreateUserForm
 
 #
 #

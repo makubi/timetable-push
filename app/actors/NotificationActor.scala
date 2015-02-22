@@ -8,6 +8,9 @@ import scaldi.akka.AkkaInjectable
 
 class NotificationActor(implicit inj: Injector) extends Actor with AkkaInjectable{
 
+  // faelle ->
+  // activate user by email
+  //
 
   override def receive: Receive = {
     case data: (List[UiTimetableEvent],UiUserBundle) => notify(data._1, data._2)

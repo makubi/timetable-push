@@ -1,5 +1,6 @@
 package services
 
+import play.api.Play
 import play.api.Play.current
 import play.api.libs.json.Json
 
@@ -60,6 +61,26 @@ class Network {
     val url = s"${serverUrl+urlAppendix}?request.preventCache=${System.currentTimeMillis()}"
 //    val cookie = authCookie.foldRight("")((a,b) => a  + (if(!b.isEmpty || !a.isEmpty) ";" else "") + b)
     WS.url(url).withHeaders("Cookie" -> authCookie).post(requestParams)
+  }
+
+  def push(): Unit ={
+    val apiKey = Play.current.configuration.getString("gcm.api.key").get
+    val endpoint = "https://android.googleapis.com/gcm/send"
+    WS.url(endpoint)
+      .withHeaders(
+      "Content-Type" -> "application/json",
+      "Authorization" -> apiKey)
+      .post("")
+  }
+
+  def validateCaptcha(response: String): Future[WSResponse] = {
+    val endPoint = "https://www.google.com/recaptcha/api/siteverify"
+    val secret = Play.current.configuration.getString("recaptcha.secret").get
+
+    WS.url(endPoint).withQueryString(
+      "secret" -> secret,
+      "response" -> response
+    ).post("")
   }
 
 }

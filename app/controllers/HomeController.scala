@@ -5,9 +5,8 @@ import scaldi.{Injector, Injectable}
 
 import scala.concurrent.Future
 import play.api.mvc._
-import services.{TimetableConfigService, UserService, WebUntisService}
+import services.{Network, TimetableConfigService, UserService, WebUntisService}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-
 
 
 class HomeController(implicit inj: Injector) extends Controller with Injectable{
@@ -15,6 +14,7 @@ class HomeController(implicit inj: Injector) extends Controller with Injectable{
   val webUntisService: WebUntisService = inject[WebUntisService]
   val userStorageService: UserService = inject[UserService]
   val configService: TimetableConfigService = inject[TimetableConfigService]
+  val network: Network = inject[Network]
 
   val U_SERVER = "https://urania.webuntis.com"
   var SCHOOL = ""
@@ -29,10 +29,11 @@ class HomeController(implicit inj: Injector) extends Controller with Injectable{
     //userStorageService.setUserActivated(testUser)
 
 
-    val user = userStorageService.getAllUser()
-    Ok(user.map(_.toString()).foldLeft("")(_ + "\n" + _))
+//    val user = userStorageService.getAllUser()
+//    Ok(user.map(_.toString()).foldLeft("")(_ + "\n" + _))
+//    Ok(views. html.register(addUser))
+    Ok("hi")
   }
-
 
   def getTimetable(server: String, school: String, user: String, password: String, elementType: Int, elementId: Int, date: Int = 20150209) = WUAuth(parse.anyContent, U_SERVER, SCHOOL, USER, PASSWORD) { (request, authCookie, server) =>
     webUntisService.getTimetable(U_SERVER, authCookie, elementType, elementId, date).map {

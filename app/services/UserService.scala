@@ -13,6 +13,7 @@ import play.api.Play.current
 trait UserService{
   def addUser(email: String, password: String): Boolean
   def getUserByEmail(email: String): Option[User]
+  def isUserRegistered(email: String): Boolean
   def isLoginValid(email: String, password: String): Boolean
   def getAllUser(): List[User]
   def getActivatedUser(): List[User]
@@ -63,6 +64,12 @@ class UserServiceImpl(implicit inj: Injector) extends UserService with Injectabl
   override def setUserActivated(user: User): Unit = {
     DB.withTransaction { implicit session =>
       storage.updateUser(user.copy(activatedByAdmin = true, activatedByUser = true))
+    }
+  }
+
+  override def isUserRegistered(email: String): Boolean = {
+    DB.withSession{ implicit session =>
+      storage.existsUserWithEmail(email)
     }
   }
 }

@@ -8,6 +8,10 @@ import services.{TimetableConfigService, UserService}
 
 trait UserProvider{
   def getActivatedUser(): List[UiUserBundle]
+  def addUser(email: String, password: String): Boolean
+  def isEmailRegistered(email: String): Boolean
+  def isLoginValid(email: String, password: String): Boolean
+  def getUserByEmail(email: String): Option[UiUser]
 }
 
 class UserProviderImpl(implicit inj: Injector) extends UserProvider with Injectable{
@@ -25,6 +29,24 @@ class UserProviderImpl(implicit inj: Injector) extends UserProvider with Injecta
         UiUser(e._1),
         UiTimetableConfig(e._2.get)
       )
+    }
+  }
+
+  override def addUser(email: String, password: String): Boolean = {
+    userService.addUser(email, password)
+  }
+
+  override def isEmailRegistered(email: String): Boolean = {
+    userService.isUserRegistered(email)
+  }
+
+  override def isLoginValid(email: String, password: String): Boolean = {
+    userService.isLoginValid(email, password)
+  }
+
+  override def getUserByEmail(email: String): Option[UiUser] = {
+    userService.getUserByEmail(email).map{
+      UiUser(_)
     }
   }
 }

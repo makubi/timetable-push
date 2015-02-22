@@ -16,7 +16,7 @@ object User{
   final val TABLE = "user"
   final val EMAIL_KEY = "email"
   final val PASSWORD_KEY = "password"
-  final val ID_KEY = "_id"
+  final val ID_KEY = "id"
   final val TIMESTAMP_CREATED_KEY = "dateTime"
   final val ACTIVATED_BY_USER_KEY = "activatedByUser"
   final val ACTIVATED_BY_ADMIN_KEY = "activatedByAdmin"
@@ -36,7 +36,7 @@ case class TimetableConfig(
                         )
 
 object TimetableConfig{
-  final val ID_KEY = "_id"
+  final val ID_KEY = "id"
   final val USER_ID_KEY = "uid"
   final val TABLE = "untisconfig"
   final val URL_KEY = "url"
@@ -58,7 +58,7 @@ case class TimetableEvent(
                          )
 
 object TimetableEvent{
-  final val ID_KEY = "_id"
+  final val ID_KEY = "id"
   final val USER_ID_KEY = "userId"
   final val CONFIG_ID_KEY = "configId"
   final val DATETIME_KEY = "datetime"
@@ -70,4 +70,19 @@ object TimetableEvent{
 }
 
 
+case class UserNotification(
+                           notificationId: UUID,
+                           userId: UUID,
+                           typee: Int,
+                           address: String
+                             )
 
+object UserNotification{
+  final val TABLE = "usernotification"
+  final val ID_KEY = "id"
+  final val USER_ID = "userId"
+  final val TYPE_KEY = "type"
+  final val ADDRESS_KEY = "address"
+
+  final val FK_USER = "fk_user"
+}
