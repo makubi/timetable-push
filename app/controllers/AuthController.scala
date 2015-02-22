@@ -10,14 +10,6 @@ class AuthController(implicit inj: Injector) extends Controller with Injectable{
   val userService: UserService = inject[UserService]
   val forms: Forms = inject[Forms]
 
-//  def login = Action { implicit request =>
-//    request.session.get(Security.username).map { user =>
-//      Redirect(routes.UserController.userArea)
-//    }.getOrElse {
-//      Redirect(routes.UserController.index)
-//    }
-//  }
-
   def authenticate = Action { implicit request =>
     forms.loginForm.bindFromRequest.fold(
       formWithErrors => BadRequest(html.user.start(forms.addUserForm, formWithErrors, 0)),

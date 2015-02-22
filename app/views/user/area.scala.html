@@ -1,9 +1,13 @@
-@(user: model.UiUser)
+@(uiUser: model.UiUser)
 
 @assets = {
 
 }
 
 @main("Userarea", assets){
-    @user.email
+    @if(uiUser.activatedByAdmin && uiUser.activatedByUser){
+        @user.areaelements.controlpanel(uiUser)
+    }else{
+        @user.areaelements.notactivated(uiUser)
+    }
 }

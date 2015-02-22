@@ -1,5 +1,6 @@
 package controllers
 
+import play.api.Logger
 import play.api.mvc.{Results, Security, Action, Controller}
 import provider.{RecaptchaProvider, UserProvider}
 
@@ -11,7 +12,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future
 
-class UserController(implicit inj: Injector) extends Controller with Secured with Injectable{
+class UserController(implicit inj: Injector) extends Controller with Secured with Injectable with ControllerUtils{
 
   override val userProvider: UserProvider = inject[UserProvider]
   val recaptchaProvider: RecaptchaProvider = inject[RecaptchaProvider]
@@ -29,6 +30,20 @@ class UserController(implicit inj: Injector) extends Controller with Secured wit
     Ok(views.html.user.area(userProvider.getUserByEmail(username).get))
   }
 
+  def activate(timestamp: Long, id: String) = Action { implicit request =>
+    parseUUID(id,
+      uuid => {
+        if(userProvider.setUserActivatedByEmail(uuid, timestamp)){
+          Redirect(routes.UserController.area)
+        }else{
+          Redirect(routes.HomeController.index)
+        }
+      }, f => {
+        Redirect(routes.HomeController.index)
+      }
+    )
+  }
+
   def validateCreateUserForm = Action.async { implicit request =>
     val bad = BadRequest(html.user.start(forms.addUserForm.withError("Email", "Captcha Error"), forms.loginForm, 1))
     forms.addUserForm.bindFromRequest.fold(
@@ -40,7 +55,8 @@ class UserController(implicit inj: Injector) extends Controller with Secured wit
               case Some(captacha) =>{
                 recaptchaProvider.validateCaptcha(captacha.head).map{ success =>
                   if(success){
-                    val result = userProvider.addUser(user._1, user._2)
+                    userProvider.addUser(user._1, user._2)
+                    Logger.info(userProvider.getUserByEmail(user._1).get.timeStampCreated.getMillis.toString())
                     Results.Redirect(routes.UserController.area).withSession(Security.username -> user._1)
                   }else{
                     bad

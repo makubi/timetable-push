@@ -35,16 +35,23 @@
             paper-ripple {
                 color: #FF9800;
             }
+
         </style>
 
-        @assets
+        <link rel="import" href="@routes.Assets.at("polymer/bower_components/polymer/polymer.html")">
+        <link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-shadow/paper-shadow.html")">
 
+        @assets
 
     </head>
 
     <body>
-        <div vertical layout center center-justified>
-            @content
+        <div horizontal layout center-justified>
+            <paper-shadow class="card" z="5" >
+                <div class="card">
+                    @content
+                </div>
+            </paper-shadow>
         </div>
     </body>
 

@@ -1,15 +1,11 @@
 @(createUserForm: Form[(String, String, String)], loginForm: Form[(String, String)], tab: Int = 0)
 
 @assets = {
-    <link rel="import" href="@routes.Assets.at("polymer/bower_components/polymer/polymer.html")">
     <link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-tabs/paper-tabs.html")">
-
     <link rel="import" href="@routes.Assets.at("polymer/bower_components/core-pages/core-pages.html")">
 
-    <link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-shadow/paper-shadow.html")">
     <link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-input/paper-input-decorator.html")">
     <link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-button/paper-button.html")">
-    <link rel="import" href="@routes.Assets.at("polymer/bower_components/re-captcha/re-captcha.html")">
 
     <polymer-element name="paper-button-submit" extends="button" noscript>
         <template>
@@ -51,31 +47,25 @@
 
 @main("User", assets){
 
-    <paper-shadow class="card ucontainer" z="5" >
+    <div class="ucontainer">
+        <paper-tabs selected="@tab">
+            <paper-tab inline flex center-center horizontal layout>Login</paper-tab>
+            <paper-tab inline flex center-center horizontal layout>Create User</paper-tab>
+        </paper-tabs>
 
-        <div class="card">
-
-            <paper-tabs selected="@tab">
-                <paper-tab inline flex center-center horizontal layout>Login</paper-tab>
-                <paper-tab inline flex center-center horizontal layout>Create User</paper-tab>
-            </paper-tabs>
-
-            <core-pages class="upage" selected="@tab" transitions="slide-up">
-                <section>
-                    <div>
-                        @user.login(loginForm)
-                    </div>
-                </section>
-                <section>
-                    <div>
-                        @user.register(createUserForm)
-                    </div>
-                </section>
-            </core-pages>
-
-        </div>
-
-    </paper-shadow>
+        <core-pages class="upage" selected="@tab" transitions="slide-up">
+            <section>
+                <div>
+                    @user.login(loginForm)
+                </div>
+            </section>
+            <section>
+                <div>
+                    @user.register(createUserForm)
+                </div>
+            </section>
+        </core-pages>
+    </div>
 
 
     <script>

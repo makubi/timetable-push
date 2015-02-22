@@ -23,6 +23,7 @@ class UserTable(tag: Tag) extends Table[User](tag, User.TABLE){
 
 class UserStorage {
 
+
   val table = TableQuery[UserTable]
 
   def addUser(user: User)(implicit session: Session) = {
@@ -49,4 +50,7 @@ class UserStorage {
     table.filter(_.userId === updatedUser.userId).update(updatedUser)
   }
 
+  def getUserById(uuid: UUID)(implicit session: Session): Option[User] = {
+    table.filter(_.userId === uuid).firstOption
+  }
 }
