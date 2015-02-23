@@ -33,6 +33,7 @@ class HomeController(implicit inj: Injector) extends Controller with Injectable{
 //    Ok(user.map(_.toString()).foldLeft("")(_ + "\n" + _))
 //    Ok(views. html.register(addUser))
     Ok("hi")
+
   }
 
   def getTimetable(server: String, school: String, user: String, password: String, elementType: Int, elementId: Int, date: Int = 20150209) = WUAuth(parse.anyContent, U_SERVER, SCHOOL, USER, PASSWORD) { (request, authCookie, server) =>

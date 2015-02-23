@@ -6,20 +6,26 @@
 
     <link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-input/paper-input-decorator.html")">
     <link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-button/paper-button.html")">
+    <link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-fab/paper-fab.html")">
 
-    <polymer-element name="paper-button-submit" extends="button" noscript>
+    <polymer-element name="paper-fab-submit" extends="button" noscript>
         <template>
             <style>
-            :host {
-            border: 0;
-            background: transparent;
-            padding: 0;
-            font-size: inherit;
-            }
+                :host {
+                    border: 0;
+                    background: transparent;
+                    padding: 0;
+                    font-size: inherit;
+                }
+                #paper_fab {
+                    background-color: rgb(253, 167, 41);
+                }
             </style>
-            <paper-button raised>
+
+            <paper-fab id="paper_fab" icon="check" raised>
                 <content></content>
-            </paper-button>
+            </paper-fab>
+
         </template>
     </polymer-element>
 
@@ -29,8 +35,8 @@
         .ucontainer {
         }
         .upage{
+            width: 450px;
             height: 400px;
-            width: 400px;
         }
 
         paper-tabs::shadow #selectionBar {
@@ -39,6 +45,10 @@
 
         paper-tabs paper-tab::shadow #ink {
             color: #FF9800;
+        }
+        .uform{
+            position: absolute;
+            top:0;right:0;bottom:0;left:0;
         }
 
     </style>
@@ -54,16 +64,12 @@
         </paper-tabs>
 
         <core-pages class="upage" selected="@tab" transitions="slide-up">
-            <section>
-                <div>
-                    @user.login(loginForm)
-                </div>
-            </section>
-            <section>
-                <div>
-                    @user.register(createUserForm)
-                </div>
-            </section>
+            <div>
+                @user.login(loginForm)
+            </div>
+            <div>
+                @user.register(createUserForm)
+            </div>
         </core-pages>
     </div>
 

@@ -12,7 +12,7 @@ GET         /user/activate/:timestamp/:id       @controllers.UserController.acti
 GET         /user/logout                        @controllers.AuthController.logout
 
 POST        /user/auth                          @controllers.AuthController.authenticate
-POST        /user/add                           @controllers.UserController.validateCreateUserForm
+POST        /user/start                           @controllers.UserController.validateCreateUserForm
 
 #
 #GET         /list/:elementType        @controllers.HomeController.getList(elementType: Int)
