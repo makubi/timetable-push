@@ -1,6 +1,7 @@
 package controllers
 
 import play.api.libs.json.Json
+import provider.UserProvider
 import scaldi.{Injector, Injectable}
 
 import scala.concurrent.Future
@@ -16,26 +17,27 @@ class HomeController(implicit inj: Injector) extends Controller with Injectable{
   val configService: TimetableConfigService = inject[TimetableConfigService]
   val network: Network = inject[Network]
 
+  val userProvider: UserProvider = inject[UserProvider]
+
   val U_SERVER = "https://urania.webuntis.com"
   var SCHOOL = ""
   var USER = ""
   var PASSWORD = ""
 
-  def index = Action{
-    //Ok(userStorageService.getAllUser().toString)
-    //userStorageService.addUser(s"test${Random.nextInt()}@example.com", "123")
-    //Ok(userStorageService.isLoginValid("test@example.com", "312").toString())
-    //val testUser = userStorageService.getUserByEmail("test1422475145@example.com").get
-    //userStorageService.setUserActivated(testUser)
-
-
-//    val user = userStorageService.getAllUser()
-//    Ok(user.map(_.toString()).foldLeft("")(_ + "\n" + _))
-//    Ok(views. html.register(addUser))
-    Ok("hi")
-
+  def index = Action{ implicit request =>
+    request.session.get(Security.username).map { user =>
+      userProvider.getUserByEmail(user).map { uiUser =>
+        Ok(views.html.authenticated.index(uiUser))
+      }.getOrElse{
+        Ok(views.html.anonymous.index()).withNewSession
+      }
+    }getOrElse{
+      Ok(views.html.anonymous.index())
+    }
   }
 
+
+  //TODO Deprevated ....
   def getTimetable(server: String, school: String, user: String, password: String, elementType: Int, elementId: Int, date: Int = 20150209) = WUAuth(parse.anyContent, U_SERVER, SCHOOL, USER, PASSWORD) { (request, authCookie, server) =>
     webUntisService.getTimetable(U_SERVER, authCookie, elementType, elementId, date).map {
       timetable => Ok(timetable.body)

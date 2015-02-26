@@ -1,6 +1,5 @@
 package controllers
 
-import play.api.Logger
 import play.api.mvc.{Results, Security, Action, Controller}
 import provider.{RecaptchaProvider, UserProvider}
 
@@ -20,9 +19,13 @@ class UserController(implicit inj: Injector) extends Controller with Secured wit
 
   def start = Action { implicit request =>
     request.session.get(Security.username).map { user =>
-      Results.Redirect(routes.UserController.area)
+      userProvider.getUserByEmail(user).map( uiUser =>
+        Ok(views.html.authenticated.user(uiUser))
+      ).getOrElse(
+        Ok(views.html.anonymous.user(forms.addUserForm, forms.loginForm, 0))
+      )
     }.getOrElse{
-      Ok(views.html.user.start(forms.addUserForm, forms.loginForm, 0))
+      Ok(views.html.anonymous.user(forms.addUserForm, forms.loginForm, 0))
     }
   }
 
@@ -34,7 +37,7 @@ class UserController(implicit inj: Injector) extends Controller with Secured wit
     parseUUID(id,
       uuid => {
         if(userProvider.setUserActivatedByEmail(uuid, timestamp)){
-          Redirect(routes.UserController.area)
+          Redirect(routes.UserController.start)
         }else{
           Redirect(routes.HomeController.index)
         }
@@ -44,8 +47,19 @@ class UserController(implicit inj: Injector) extends Controller with Secured wit
     )
   }
 
+  def authenticate = Action { implicit request =>
+    forms.loginForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(html.user.start(forms.addUserForm, formWithErrors, 0)),
+      user => Redirect(routes.UserController.start).withSession(Security.username -> user._1)
+    )
+  }
+
+  def logout = Action {
+    Redirect(routes.HomeController.index).withNewSession
+  }
+
   def validateCreateUserForm = Action.async { implicit request =>
-    val bad = BadRequest(html.user.start(forms.addUserForm.withError("Email", "Captcha Error"), forms.loginForm, 1))
+    def bad(errorMsg: String = "Captcha Error") = BadRequest(html.user.start(forms.addUserForm.withError("Email", errorMsg), forms.loginForm, 1))
     forms.addUserForm.bindFromRequest.fold(
       formWithErrors => Future{ BadRequest(html.user.start(formWithErrors, forms.loginForm, 1)) },
       user => {
@@ -55,21 +69,23 @@ class UserController(implicit inj: Injector) extends Controller with Secured wit
               case Some(captacha) =>{
                 recaptchaProvider.validateCaptcha(captacha.head).map{ success =>
                   if(success){
-                    userProvider.addUser(user._1, user._2)
-                    Logger.info(userProvider.getUserByEmail(user._1).get.timeStampCreated.getMillis.toString())
-                    Results.Redirect(routes.UserController.area).withSession(Security.username -> user._1)
+                    val added = userProvider.addUser(user._1, user._2)
+                    if(added){
+                      Results.Redirect(routes.UserController.start()).withSession(Security.username -> user._1)
+                    }else{
+                      bad("User already exists")
+                    }
                   }else{
-                    bad
+                    bad()
                   }
                 }
               }
-              case None => Future{ bad }
+              case None => Future{ bad() }
             }
           }
-          case None => Future{ bad }
+          case None => Future{ bad() }
         }
       }
     )
   }
-
 }

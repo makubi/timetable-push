@@ -32,7 +32,7 @@
 
     <style>
 
-        .ucontainer {
+        #ucontainer {
         }
         .upage{
             width: 450px;
@@ -55,24 +55,30 @@
 
 }
 
-@main("User", assets){
+@menu = {
+}
 
-    <div class="ucontainer">
-        <paper-tabs selected="@tab">
-            <paper-tab inline flex center-center horizontal layout>Login</paper-tab>
-            <paper-tab inline flex center-center horizontal layout>Create User</paper-tab>
-        </paper-tabs>
+@indexAnonym("Login", assets, menu, 1){
 
-        <core-pages class="upage" selected="@tab" transitions="slide-up">
-            <div>
-                @user.login(loginForm)
-            </div>
-            <div>
-                @user.register(createUserForm)
-            </div>
-        </core-pages>
+    <div layout horizontal center justified-center>
+
+        <div class="ucontainer">
+            <paper-tabs selected="@tab">
+                <paper-tab>Login</paper-tab>
+                <paper-tab>Create User</paper-tab>
+            </paper-tabs>
+
+            <core-pages class="upage" selected="@tab">
+                <div>
+                    @user.login(loginForm)
+                </div>
+                <div>
+                    @user.register(createUserForm)
+                </div>
+            </core-pages>
+        </div>
+
     </div>
-
 
     <script>
         var tabs = document.querySelector('paper-tabs');

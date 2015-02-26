@@ -4,10 +4,16 @@
 
 }
 
-@main("Userarea", assets){
+@menu = {
+
+}
+
+@index("Userarea", assets, menu, 0){
     @if(uiUser.activatedByAdmin && uiUser.activatedByUser){
         @user.areaelements.controlpanel(uiUser)
     }else{
         @user.areaelements.notactivated(uiUser)
     }
 }
+
+    @*Delete ME //TODO*@

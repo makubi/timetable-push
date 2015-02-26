@@ -2,7 +2,7 @@ package modules
 
 import actors.{NotificationActor, AnalystActor, DataFetcher, TimedActor}
 import akka.actor.ActorSystem
-import controllers.{Forms, AuthController, UserController, HomeController}
+import controllers.{Forms, UserController, HomeController}
 import provider._
 import scaldi.Module
 import scaldi.play.condition._
@@ -48,7 +48,6 @@ class ControllerModule extends Module{
 
   binding to new HomeController
   binding to new UserController
-  binding to new AuthController
 }
 
 
