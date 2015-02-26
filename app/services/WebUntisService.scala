@@ -21,7 +21,7 @@ class WebUntisServiceImpl(implicit inj: Injector) extends WebUntisService with I
   }
 
   def doAuthentication(serverUrl: String, school: String, username: String, password: String) = {
-    network.authenticate(serverUrl, school, username, password)
+    network.authenticate2(serverUrl, school, username, password)
   }
 
   def getElementList(serverUrl: String, authCookie: String, elementType: Int) = {

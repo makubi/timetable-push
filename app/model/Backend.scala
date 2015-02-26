@@ -32,7 +32,8 @@ case class TimetableConfig(
                         elementType: Int,
                         elementId: Int,
                         userName: String,
-                        password: String
+                        password: String,
+                        error: Boolean
                         )
 
 object TimetableConfig{
@@ -45,6 +46,7 @@ object TimetableConfig{
   final val ELEMENT_ID_KEY = "elementId"
   final val USER_KEY = "untisuser"
   final val PASSWORD_KEY = "untispassword"
+  final val ERROR_KEY = "error"
 
   final val USER_ID_FK = "userIdFk"
 }
