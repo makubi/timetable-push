@@ -2,7 +2,7 @@ package modules
 
 import actors.{NotificationActor, AnalystActor, DataFetcher, TimedActor}
 import akka.actor.ActorSystem
-import controllers.{Forms, UserController, HomeController}
+import controllers.{TimetableController, Forms, UserController, HomeController}
 import provider._
 import scaldi.Module
 import scaldi.play.condition._
@@ -22,6 +22,7 @@ class ProviderModule extends Module{
   bind [UserProvider] when (inDevMode or inTestMode or inProdMode) to new UserProviderImpl
   bind [TimetableEventProvider] when (inDevMode or inTestMode or inProdMode) to new TimetableEventProviderImpl
   bind [RecaptchaProvider] when (inDevMode or inTestMode or inProdMode) to new RecaptchaProviderImpl()
+  bind [WebUntisProvider] when (inDevMode or inTestMode or inProdMode) to new WebUntisProviderImpl()
 }
 
 class StorageModule extends Module{
@@ -36,7 +37,7 @@ class NetworkModule extends Module{
 }
 
 class AkkaModule extends Module{
-  bind [ActorSystem] to ActorSystem("UntisCrawler") destroyWith (_.shutdown())
+  bind [ActorSystem] to ActorSystem("timetable-push") destroyWith (_.shutdown())
   bind [TimedActor] to new TimedActor
   bind [DataFetcher] to new DataFetcher
   bind [AnalystActor] to new AnalystActor
@@ -48,6 +49,7 @@ class ControllerModule extends Module{
 
   binding to new HomeController
   binding to new UserController
+  binding to new TimetableController
 }
 
 

@@ -17,20 +17,18 @@ class UserController(implicit inj: Injector) extends Controller with Secured wit
   val recaptchaProvider: RecaptchaProvider = inject[RecaptchaProvider]
   val forms: Forms = inject[Forms]
 
-  def start = Action { implicit request =>
-    request.session.get(Security.username).map { user =>
-      userProvider.getUserByEmail(user).map( uiUser =>
-        Ok(views.html.authenticated.user(uiUser))
-      ).getOrElse(
-        Ok(views.html.anonymous.user(forms.addUserForm, forms.loginForm, 0))
-      )
-    }.getOrElse{
-      Ok(views.html.anonymous.user(forms.addUserForm, forms.loginForm, 0))
+  def start = withAuthO { user => implicit request =>
+    user match{
+      case Some(uiUser) => Ok(views.html.authenticated.user(uiUser))
+      case None => Ok(views.html.anonymous.user(forms.addUserForm, forms.loginForm, 0))
     }
   }
 
-  def area = withAuth { username => implicit request =>
-    Ok(views.html.user.area(userProvider.getUserByEmail(username).get))
+  def addConfig = withAuthO { user => implicit request =>
+    user match {
+      case Some(uiUser) => Ok(views.html.authenticated.addConfig(uiUser))
+      case None => Redirect(routes.UserController.start())
+    }
   }
 
   def activate(timestamp: Long, id: String) = Action { implicit request =>

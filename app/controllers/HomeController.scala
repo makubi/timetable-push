@@ -10,7 +10,7 @@ import services.{Network, TimetableConfigService, UserService, WebUntisService}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 
-class HomeController(implicit inj: Injector) extends Controller with Injectable{
+class HomeController(implicit inj: Injector) extends Controller with Injectable with Secured{
 
   val webUntisService: WebUntisService = inject[WebUntisService]
   val userStorageService: UserService = inject[UserService]
@@ -24,18 +24,12 @@ class HomeController(implicit inj: Injector) extends Controller with Injectable{
   var USER = ""
   var PASSWORD = ""
 
-  def index = Action{ implicit request =>
-    request.session.get(Security.username).map { user =>
-      userProvider.getUserByEmail(user).map { uiUser =>
-        Ok(views.html.authenticated.index(uiUser))
-      }.getOrElse{
-        Ok(views.html.anonymous.index()).withNewSession
-      }
-    }getOrElse{
-      Ok(views.html.anonymous.index())
+  def index = withAuthO { user => implicit request =>
+    user match {
+      case Some(uiUser) => Ok(views.html.authenticated.index(uiUser))
+      case None => Ok(views.html.anonymous.index()).withNewSession
     }
   }
-
 
   //TODO Deprevated ....
   def getTimetable(server: String, school: String, user: String, password: String, elementType: Int, elementId: Int, date: Int = 20150209) = WUAuth(parse.anyContent, U_SERVER, SCHOOL, USER, PASSWORD) { (request, authCookie, server) =>

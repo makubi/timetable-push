@@ -3,18 +3,25 @@
 # ~~~~
 
 # Home page
+
+# HTML stuff
 GET         /                                    @controllers.HomeController.index
-
 GET         /user                                @controllers.UserController.start
-
 GET         /user/start                          @controllers.UserController.start
+GET         /user/config                         @controllers.UserController.addConfig
 
-#GET         /user/area                           @controllers.UserController.area
+
 
 GET         /user/activate/:timestamp/:id        @controllers.UserController.activate(timestamp: Long, id: String)
 GET         /user/logout                         @controllers.UserController.logout
+
 POST        /user/auth                           @controllers.UserController.authenticate
 POST        /user/start                          @controllers.UserController.validateCreateUserForm
+
+POST        /js/search                           @controllers.TimetableController.schoolSearch(q: String)
+POST        /js/auth                             @controllers.TimetableController.untisAuth(u: String, p: String)
+POST        /js/loadLists                        @controllers.TimetableController.loadLists(se: String, sc: String, u: String, p: String)
+
 
 #
 #GET         /list/:elementType        @controllers.HomeController.getList(elementType: Int)

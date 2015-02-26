@@ -2,7 +2,7 @@ package controllers
 
 import java.util.UUID
 
-import play.api.mvc.{Result, Results}
+import play.api.mvc._
 
 import scala.util.{Failure, Success, Try}
 

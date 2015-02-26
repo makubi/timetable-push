@@ -1,0 +1,67 @@
+@(uiUser: model.UiUser)
+
+@assets = {
+    <link rel="import" href="@routes.Assets.at("polymer/bower_components/core-collapse/core-collapse.html")">
+    @views.html.polymer.schoolsearch()
+    @views.html.polymer.login()
+    @views.html.polymer.list()
+}
+
+@menu = {
+
+}
+
+
+@indexAuth("Add a Config - Auth", assets, menu, uiUser, 2){
+    <div class="cardhead">
+        Add Config
+    </div>
+
+    <core-collapse id="collapseLists" opened="false">
+        <div around-justified horizontal layout id="listContainer">
+        </div>
+    </core-collapse>
+
+    <core-collapse id="collapseLogin" opened="false">
+        <school-login id="schoollogin" />
+    </core-collapse>
+
+    <core-collapse id="collapseSchoolSearch" opened="true">
+        <school-search id="schoolsearch" />
+    </core-collapse>
+
+    <script type="text/javascript">
+        var loginOpened = false;
+        var listOpened = false;
+        var container  = document.querySelector('#schoolsearch');
+        container.addEventListener('schoolSelected', function(school, e, f) {
+            document.querySelector('#schoollogin').school = JSON.parse(school.detail);
+            if(!loginOpened){
+                document.querySelector('#collapseLogin').toggle();
+                loginOpened = true;
+            }
+            if(listOpened){
+                listOpened = false;
+                document.querySelector("#collapseLists" ).toggle();
+            }
+        });
+        document.querySelector('#schoollogin').addEventListener("listsLoaded", function(data, e, f){
+            var lists = data.detail;
+            var container = document.getElementById('listContainer');
+            container.innerHTML = "";
+            for(var i in lists){
+                var list = new MasterList();
+                var item = lists[i];
+                list.data = item;
+                console.log(item);
+                container.appendChild(list);
+            }
+            if(!listOpened){
+                document.querySelector("#collapseLists" ).toggle();
+                listOpened = true;
+            }
+        });
+    //var mockSchool = {"address":"2000 Stockerau,  ","server":"kirke.webuntis.com","displayName":"Demo","loginName":"kbt"};
+    //document.querySelector('#schoollogin' ).school = mockSchool;
+    </script>
+}

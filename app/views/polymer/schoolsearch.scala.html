@@ -14,11 +14,11 @@
                 display: block;
                 padding: 8px;
                 position: relative;
-                background-color: #E5E5E5;
+                /*background-color: #E5E5E5;*/
                 overflow: auto;
             }
 
-            .card{
+            .subcard{
                 margin: 8px;
                 font-size: 14px;
                 padding-left: 16px;
@@ -28,13 +28,11 @@
                 background: #fff;
                 line-height: 1.5;
             }
-
-            .cardhead{
-                font-size: 24px;
+            .subcardhead{
+                font-size: 18px;
                 color: #FF9800;
                 margin-bottom: 8px;
             }
-
             paper-ripple {
                 color: #FF9800;
             }
@@ -53,8 +51,8 @@
         <div horizontal layout wrap around-justified id="resultbox">
             <template repeat="{{school in schools}}">
 
-                    <paper-shadow class="card" on-tap="{{onSchoolSelected}}" data-school="{{stringify(school)}}" z="1">
-                        <div class="cardhead">
+                    <paper-shadow class="subcard" on-tap="{{onSchoolSelected}}" data-school="{{stringify(school)}}" z="1">
+                        <div class="subcardhead">
                             {{school.displayName}}
                         </div>
 
@@ -86,7 +84,8 @@
 
             search: function() {
                 var query = this.$.searchParams.value
-                this.$.ajax.url = "/search?searchParam=" + encodeURIComponent(query);
+
+                this.$.ajax.url = "/js/search?q=" + encodeURIComponent(query);
                 this.$.ajax.go();
             },
 
