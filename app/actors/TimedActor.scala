@@ -1,5 +1,6 @@
 package actors
 
+import play.api.Logger
 import provider.UserProvider
 import scaldi.Injector
 import scaldi.akka.AkkaInjectable
@@ -12,7 +13,9 @@ class TimedActor(implicit inj: Injector) extends Actor with AkkaInjectable{
 
   override def receive: Receive = {
     case "ping" => {
-      userProvider.getActivatedUser().foreach(u => downloadActorRef ! u)
+      val user = userProvider.getActivatedUser()
+      Logger.info(s"---- Hey, ${user.size} user found!")
+      user.foreach(u => downloadActorRef ! u)
     }
   }
 

@@ -1,6 +1,6 @@
 package services
 
-import play.api.Play
+import play.api.{Logger, Play}
 import play.api.Play.current
 import play.api.libs.json.Json
 
@@ -53,13 +53,28 @@ class Network {
       "j_password" -> Seq(password)
     )
     WS.url(url).withFollowRedirects(false).post(form)
+    //val cookieString = cookie.distinct.foldRight("")((a,b) => a  + (if(!b.isEmpty || !a.isEmpty) ";" else "") + b)
+  }
+
+  def authenticate2(serverUrl: String, school: String, username: String, password: String): Future[WSResponse] = {
+    val url = s"${serverUrl}/WebUntis/jsonrpc.do?school=${school}"
+    val body = Json.obj(
+      "jsonrpc" -> "2.0",
+      "method" -> "authenticate",
+      "id" -> 0,
+      "params" -> Json.obj(
+        "user" -> username,
+        "password" -> password
+      )
+    )
+    Logger.info(body.toString())
+    WS.url(url).post(body)
   }
 
 
   def doTimetableRequest(serverUrl: String, authCookie: String, requestParams: Map[String, Seq[String]]): Future[WSResponse] = {
     val urlAppendix = "/WebUntis/Timetable.do"
-    val url = s"${serverUrl+urlAppendix}?request.preventCache=${System.currentTimeMillis()}"
-//    val cookie = authCookie.foldRight("")((a,b) => a  + (if(!b.isEmpty || !a.isEmpty) ";" else "") + b)
+    val url = s"${serverUrl}${urlAppendix}?request.preventCache=${System.currentTimeMillis()}"
     WS.url(url).withHeaders("Cookie" -> authCookie).post(requestParams)
   }
 
@@ -70,7 +85,7 @@ class Network {
       .withHeaders(
       "Content-Type" -> "application/json",
       "Authorization" -> apiKey)
-      .post("")
+      .post("")//TODO
   }
 
   def validateCaptcha(response: String): Future[WSResponse] = {

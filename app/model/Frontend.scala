@@ -10,9 +10,9 @@ object UiUser{
   def apply(u: User): UiUser = UiUser(u.email, u.password, u.userId, u.timeStampCreated, u.activatedByUser, u.activatedByAdmin)
 }
 
-case class UiTimetableConfig(configId: UUID,userId: UUID,url: String,school: String,elementType: Int,elmentId: Int, userName: String, password: String)
+case class UiTimetableConfig(configId: UUID,userId: UUID,url: String,school: String,elementType: Int,elmentId: Int, userName: String, password: String, error: Boolean)
 object UiTimetableConfig{
-  def apply(c: TimetableConfig): UiTimetableConfig = UiTimetableConfig(c.configId, c.userId, c.url, c.school, c.elementType, c.elementId, c.userName, c.password)
+  def apply(c: TimetableConfig): UiTimetableConfig = UiTimetableConfig(c.configId, c.userId, c.url, c.school, c.elementType, c.elementId, c.userName, c.password, c.error)
 }
 case class UiUserBundle(uiUser: UiUser, uiTimetableConfig: UiTimetableConfig)
 

@@ -2,7 +2,7 @@ package provider
 
 import java.util.UUID
 
-import model.{UiUserBundle, UiTimetableConfig, UiUser}
+import model.{TimetableConfig, UiUserBundle, UiTimetableConfig, UiUser}
 import org.joda.time.DateTime
 import play.api.Logger
 import scaldi.{Injector, Injectable}
@@ -16,6 +16,7 @@ trait UserProvider{
   def isLoginValid(email: String, password: String): Boolean
   def getUserByEmail(email: String): Option[UiUser]
   def setUserActivatedByEmail(uuid: UUID, l: Long): Boolean
+  def setUserBundleFailed(uiUserBundle: UiUserBundle): Unit
 }
 
 class UserProviderImpl(implicit inj: Injector) extends UserProvider with Injectable{
@@ -27,7 +28,7 @@ class UserProviderImpl(implicit inj: Injector) extends UserProvider with Injecta
     userService.getActivatedUser().map{ user =>
       (user, timetableConfigService.getTimetableConfigByUser(user.userId))
     }.filter{ e =>
-      e._2.isDefined
+      (e._2.isDefined && !e._2.get.error)
     }.map{ e =>
       UiUserBundle(
         UiUser(e._1),
@@ -63,5 +64,10 @@ class UserProviderImpl(implicit inj: Injector) extends UserProvider with Injecta
         false
       }
     }.getOrElse(false)
+  }
+
+  override def setUserBundleFailed(uiUserBundle: UiUserBundle): Unit = {
+    val c = uiUserBundle.uiTimetableConfig
+    timetableConfigService.setTimetableConfigError(TimetableConfig(c.configId,c.userId,c.url,c.school,c.elementType,c.elmentId,c.userName,c.password,c.error), true)
   }
 }

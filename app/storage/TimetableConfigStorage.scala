@@ -16,8 +16,9 @@ class TimetableConfigTable(tag: Tag) extends Table[TimetableConfig](tag, Timetab
   def elementId = column[Int](TimetableConfig.ELEMENT_ID_KEY, O.NotNull)
   def userName = column[String](TimetableConfig.USER_KEY, O.NotNull)
   def password = column[String](TimetableConfig.PASSWORD_KEY, O.NotNull)
+  def error = column[Boolean](TimetableConfig.ERROR_KEY, O.NotNull)
 
-  override def * = (configId, userId, url, school, elementType, elementId, userName, password) <> ((TimetableConfig.apply _).tupled, TimetableConfig.unapply)
+  override def * = (configId, userId, url, school, elementType, elementId, userName, password, error) <> ((TimetableConfig.apply _).tupled, TimetableConfig.unapply)
 
   def fk = foreignKey(TimetableConfig.USER_ID_FK, userId, TableQuery[UserTable])(_.userId)
 }
@@ -36,6 +37,10 @@ class TimetableConfigStorage{
 
   def getConfigByUserId(userId: UUID)(implicit session: Session): Option[TimetableConfig] = {
     table.filter(_.userId === userId).firstOption
+  }
+
+  def updateConfig(timetableConfig: TimetableConfig)(implicit session: Session): Unit ={
+    table.filter(_.userId === timetableConfig.userId).update(timetableConfig)
   }
 
 }
