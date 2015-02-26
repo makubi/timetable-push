@@ -1,15 +1,15 @@
 package controllers
 
 import play.api.mvc._
-import services.UserService
+import provider.UserProvider
 
 trait Secured {
 
-  val userService: UserService
+  val userProvider: UserProvider
 
   def username(request: RequestHeader) = request.session.get(Security.username)
 
-  def onUnauthorized(request: RequestHeader) = Results.Redirect("/u/login")
+  def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.UserController.start)
 
   def withAuth(f: => String => Request[AnyContent] => Result) = {
     Security.Authenticated(username, onUnauthorized) { user =>

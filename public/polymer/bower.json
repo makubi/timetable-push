@@ -13,7 +13,8 @@
     "paper-shadow": "Polymer/paper-shadow#~0.5.4",
     "paper-ripple": "Polymer/paper-ripple#~0.5.4",
     "core-collapse": "Polymer/core-collapse#~0.5.4",
-    "paper-item": "Polymer/paper-item#~0.5.4"
+    "paper-item": "Polymer/paper-item#~0.5.4",
+    "re-captcha": "~1.0.1"
   },
   "resolutions": {
     "polymer": "^0.5",

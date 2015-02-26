@@ -29,16 +29,17 @@ class DataFetcher(implicit inj: Injector) extends Actor with AkkaInjectable{
           val cookieString = cookie.distinct.foldRight("")((a,b) => a  + (if(!b.isEmpty || !a.isEmpty) ";" else "") + b)
           Future.sequence(TimetableUtil.getRequestDate().map(timetableService.getTimetable(config.url, cookieString, config.elementType, config.elmentId, _))
           ).map{ data =>
-            val results = data.map(r => JsonUtil.parseTimetableResponse(r.body))
-            results.foreach{ d =>
-              val data = d.get
-              val irregularEvents = TimetableUtil.getIrregularEvents(data.data)
-              analystActor ! (irregularEvents.map(d => MergedTimetablePeriod(d, data.data.elements)), uiBundle)
-            }
+
+            val results = data.map(r => JsonUtil.parseTimetableResponse(r.body).get)    //TODO possible error
+
+            val irregularLesson = results.map( d => TimetableUtil.getIrregularEvents(d.data)).flatten
+            val elements = results.map(d => d.data.elements).flatten.distinct
+
+            analystActor ! (irregularLesson.map(d => MergedTimetablePeriod(d, elements)), uiBundle)
           }
         }
-        case None => Future {
-          Logger(s"Error auth: ${uiBundle.uiUser}")
+        case None => {
+          Logger(s"Error auth: ${uiBundle.uiUser.email}")
         }
       }
     }

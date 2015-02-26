@@ -3,18 +3,19 @@
 # ~~~~
 
 # Home page
-GET         /                         @controllers.HomeController.index
+GET         /                                    @controllers.HomeController.index
 
-GET         /user                     @controllers.UserController.index
+GET         /user                                @controllers.UserController.start
 
+GET         /user/start                          @controllers.UserController.start
 
-# auth
-GET         /u/login                  @controllers.AuthController.login
-GET         /u/logout                 @controllers.AuthController.logout
-POST        /u/auth                   @controllers.AuthController.authenticate
+#GET         /user/area                           @controllers.UserController.area
 
+GET         /user/activate/:timestamp/:id        @controllers.UserController.activate(timestamp: Long, id: String)
+GET         /user/logout                         @controllers.UserController.logout
+POST        /user/auth                           @controllers.UserController.authenticate
+POST        /user/start                          @controllers.UserController.validateCreateUserForm
 
-#
 #
 #GET         /list/:elementType        @controllers.HomeController.getList(elementType: Int)
 #
@@ -28,4 +29,4 @@ POST        /u/auth                   @controllers.AuthController.authenticate
 #
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file             controllers.Assets.at(path="/public", file)
+GET         /assets/*file                        controllers.Assets.at(path="/public", file)

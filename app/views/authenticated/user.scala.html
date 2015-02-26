@@ -1,0 +1,18 @@
+@(uiUser: model.UiUser)
+
+@assets = {
+
+}
+
+@menu = {
+}
+
+
+@indexAuth("Home - Auth", assets, menu, uiUser, 1){
+    <div class="cardhead">
+        User Area:
+    </div>
+    @uiUser.email
+
+    <a href="@routes.UserController.logout()">Logout</a>
+}

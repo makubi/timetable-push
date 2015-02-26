@@ -1,6 +1,9 @@
 package provider
 
+import java.util.UUID
+
 import model.{UiUserBundle, UiTimetableConfig, UiUser}
+import org.joda.time.DateTime
 import play.api.Logger
 import scaldi.{Injector, Injectable}
 import services.{TimetableConfigService, UserService}
@@ -8,6 +11,11 @@ import services.{TimetableConfigService, UserService}
 
 trait UserProvider{
   def getActivatedUser(): List[UiUserBundle]
+  def addUser(email: String, password: String): Boolean
+  def isEmailRegistered(email: String): Boolean
+  def isLoginValid(email: String, password: String): Boolean
+  def getUserByEmail(email: String): Option[UiUser]
+  def setUserActivatedByEmail(uuid: UUID, l: Long): Boolean
 }
 
 class UserProviderImpl(implicit inj: Injector) extends UserProvider with Injectable{
@@ -26,5 +34,34 @@ class UserProviderImpl(implicit inj: Injector) extends UserProvider with Injecta
         UiTimetableConfig(e._2.get)
       )
     }
+  }
+
+  override def addUser(email: String, password: String): Boolean = {
+    userService.addUser(email, password)
+  }
+
+  override def isEmailRegistered(email: String): Boolean = {
+    userService.isUserRegistered(email)
+  }
+
+  override def isLoginValid(email: String, password: String): Boolean = {
+    userService.isLoginValid(email, password)
+  }
+
+  override def getUserByEmail(email: String): Option[UiUser] = {
+    userService.getUserByEmail(email).map{
+      UiUser(_)
+    }
+  }
+
+  override def setUserActivatedByEmail(uuid: UUID, timeStamp: Long): Boolean = {
+    userService.getUserById(uuid).map{ user =>
+      if(user.timeStampCreated.getMillis == timeStamp){
+        userService.setUserActivated(user, true, user.activatedByAdmin)
+        true
+      }else{
+        false
+      }
+    }.getOrElse(false)
   }
 }
