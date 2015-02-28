@@ -28,7 +28,7 @@ case class TimetableData(elementPeriods: Map[String, List[TimetablePeriod]],elem
 
 case class TimetableResponse(lastImportTimestamp: Long, data: TimetableData)
 
-case class TimetableResponseWrapper(result: TimetableResponse)
+case class TimetableResponseWrapper(result: TimetableResponse, isSessionTimeout: Boolean)
 
 
 

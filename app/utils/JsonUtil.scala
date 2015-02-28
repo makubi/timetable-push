@@ -17,10 +17,13 @@ object JsonUtil {
 
   def parseTimetableResponse(data: String): Option[TimetableResponse] = {
     val deserializedData = Try(objectMapper.readValue(data, classOf[TimetableResponseWrapper]))
-
     deserializedData match {
       case Success(result) => {
-        Some(result.result)
+        if(result.isSessionTimeout){
+          None
+        }else{
+          Some(result.result)
+        }
       }
       case Failure(e) => {
         Logger.error(s"Failed to parse Json: ${e.getMessage}")

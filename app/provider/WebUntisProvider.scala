@@ -1,9 +1,11 @@
 package provider
 
+import model.TimetableResponse
 import play.api.libs.json.{JsObject, JsValue, Json}
 import scaldi.{Injector, Injectable}
 import services.WebUntisService
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import utils.{JsonUtil, TimetableUtil}
 
 import scala.concurrent.Future
 import scala.util.parsing.json.{JSONObject, JSONArray}
@@ -13,6 +15,7 @@ trait WebUntisProvider {
   def authenticate(server: String, school: String, username: String, password: String): Future[Option[String]]
   def loadList(server: String, school: String, username: String, password: String): Future[JsValue]
   def loadUserData(server: String, school: String, username: String, password: String): Future[JsValue]
+  def loadTimetable(server: String, school: String, username: String, password: String, elementType: Int, elementId: Int): Future[Option[List[Option[TimetableResponse]]]]
 }
 
 class WebUntisProviderImpl(implicit inj: Injector) extends WebUntisProvider with Injectable {
@@ -64,6 +67,20 @@ class WebUntisProviderImpl(implicit inj: Injector) extends WebUntisProvider with
       s"https://${url}"
     }else{
       url
+    }
+  }
+
+  override def loadTimetable(server: String, school: String, username: String, password: String, elementType: Int, elementId: Int): Future[Option[List[Option[TimetableResponse]]]] = {
+    authenticate(server, school, username, password).flatMap{ auth =>
+      auth match {
+        case Some(cookie) => {
+          val blub = Future.sequence(TimetableUtil.getRequestDate().map(webuntisService.getTimetable(server, cookie, elementType, elementId, _)).map{ data =>
+            data.map(r => JsonUtil.parseTimetableResponse(r.body))
+          })
+          blub.map(Some(_))
+        }
+        case None => Future { None }
+      }
     }
   }
 }
