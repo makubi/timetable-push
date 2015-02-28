@@ -19,7 +19,7 @@ POST        /user/auth                           @controllers.UserController.aut
 POST        /user/start                          @controllers.UserController.validateCreateUserForm
 
 POST        /js/search                           @controllers.TimetableController.schoolSearch(q: String)
-POST        /js/auth                             @controllers.TimetableController.untisAuth(u: String, p: String)
+POST        /js/userData                         @controllers.TimetableController.userData(se: String, sc: String, u: String, p: String)
 POST        /js/loadLists                        @controllers.TimetableController.loadLists(se: String, sc: String, u: String, p: String)
 
 

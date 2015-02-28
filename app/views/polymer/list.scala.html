@@ -1,4 +1,7 @@
 @()
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-tabs/paper-tabs.html")"
+xmlns="http://www.w3.org/1999/html">
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/core-animated-pages/core-animated-pages.html")">
 
 <link rel="import" href="@routes.Assets.at("polymer/bower_components/polymer/polymer.html")">
 <link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-input/paper-input-decorator.html")">
@@ -6,6 +9,9 @@
 <link rel="import" href="@routes.Assets.at("polymer/bower_components/core-ajax/core-ajax.html")">
 <link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-shadow/paper-shadow.html")">
 <link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-item/paper-item.html")">
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-fab/paper-fab.html")">
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/core-icons/core-icons.html")">
+
 <polymer-element name="master-list" constructor="MasterList" attribute="data">
     <template>
         <style>
@@ -13,7 +19,7 @@
             display: block;
             padding: 8px;
             /*position: relative;*/
-            background-color: #E5E5E5;
+            /*background-color: #E5E5E5;*/
         }
 
         .card{
@@ -25,8 +31,6 @@
             padding-top: 8px;
             background: #fff;
             line-height: 1.5;
-            min-width: 300px;;
-            max-width: 400px;
         }
 
         .cardhead{
@@ -38,28 +42,110 @@
              max-height: 300px;
              overflow : auto ;
         }
+        paper-tabs::shadow #selectionBar {
+            background-color: #FF9800;
+        }
+
+        paper-tabs paper-tab::shadow #ink {
+            color: #FF9800;
+        }
+        #paper_fab {
+            background-color: rgb(253, 167, 41);
+            display: none;
+        }
 
         </style>
+        <paper-shadow class="card" z="1" is="auto-binding" style="">
 
-
-        <paper-shadow class="card" z="1" >
-            <div class="cardhead">
-                {{data.elementTypeLabel || noAccess }}
-            </div>
-
-            <div class="list">
-                <template repeat="{{element in data.elements}}">
-                    <paper-item>{{element.name}} - {{element.longName}}</paper-item>
+            <paper-tabs selected="{{selected}}" selectedindex="0">
+                <template repeat="{{element in data}}">
+                    <template if="{{element.elements}}">
+                        <paper-tab inline flex center-center horizontal layout>{{element.elementTypeLabel | titleToString}}</paper-tab>
+                    </template>
                 </template>
+            </paper-tabs>
+
+            <core-animated-pages selected="{{selected}}" selectedindex="0" notap style="overflow:auto;height:300px;">
+                <template repeat="{{e2 in data}}">
+                    <template if="{{e2.elements}}">
+                        <section>
+                            <template repeat="{{e in e2.elements}}">
+                                <paper-item>{{e.name}} - {{e.longName}}</paper-item>
+                            </template>
+                        </section>
+                    </template>
+                </template>
+            </core-animated-pages>
+
+            <div flex horizontal end-justified layout end>
+                <paper-fab id="paper_fab" icon="account-circle" />
             </div>
+
         </paper-shadow>
+
+
+        <core-ajax
+            id="loadLists"
+            url=""
+            method="post"
+            handleAs="json"
+            on-core-response="{{handleListResponse}}"></core-ajax>
+
+        <core-ajax
+            id="loadUserData"
+            url=""
+            method="post"
+            handleAs="json"
+            on-core-response="{{handleUserDataResponse}}"></core-ajax>
 
     </template>
 
     <script>
         Polymer("master-list", {
-            data: null,
-            noAccess: "No Access"
+            selected: 0,
+            data: [],
+            userData: null,
+            noAccess: "No Access",
+
+            loadData: function(loginSet){
+                var urlLists = "/js/loadLists?";
+                var urlUserData = "/js/userData?";
+
+                var user = "se=" + encodeURIComponent(loginSet.server) +
+                    "&sc=" + encodeURIComponent(loginSet.loginName) +
+                    "&u=" + encodeURIComponent(loginSet.user) +
+                    "&p=" + encodeURIComponent(loginSet.password);
+
+                this.$.loadLists.url = urlLists + user;
+                this.$.loadUserData.url = urlUserData + user;
+                this.$.loadLists.go();
+                this.$.loadUserData.go();
+            },
+
+            handleListResponse: function(event, data){
+                this.data = [];
+                this.data = data.response[0];
+            },
+
+            handleUserDataResponse: function(event, data){
+                var user = data.response.result;
+                var fab = this.$.paper_fab;
+
+                if(user && user.personId !== 0 && user.personType !== 0){
+                    fab.style.display = "block";
+                    this.userData = user;
+                }else{
+                    fab.style.display = "none";
+                }
+            },
+
+            titleToString: function(title){
+                if(title === "IDC_KLASSE") return "Class";
+                if(title === "IDC_LEHRER") return "Teacher";
+                if(title === "IDC_RAUM") return "Room";
+                if(title === "IDC_FACH") return "Subject";
+            }
+
         });
     </script>
 

@@ -18,8 +18,7 @@
     </div>
 
     <core-collapse id="collapseLists" opened="false">
-        <div around-justified horizontal layout id="listContainer">
-        </div>
+        <master-list id="masterlist" />
     </core-collapse>
 
     <core-collapse id="collapseLogin" opened="false">
@@ -45,23 +44,13 @@
                 document.querySelector("#collapseLists" ).toggle();
             }
         });
-        document.querySelector('#schoollogin').addEventListener("listsLoaded", function(data, e, f){
-            var lists = data.detail;
-            var container = document.getElementById('listContainer');
-            container.innerHTML = "";
-            for(var i in lists){
-                var list = new MasterList();
-                var item = lists[i];
-                list.data = item;
-                console.log(item);
-                container.appendChild(list);
-            }
+        document.querySelector('#schoollogin').addEventListener("login", function(data, e, f){
+            document.querySelector("#masterlist").loadData(data.detail);
+
             if(!listOpened){
                 document.querySelector("#collapseLists" ).toggle();
                 listOpened = true;
             }
         });
-    //var mockSchool = {"address":"2000 Stockerau,  ","server":"kirke.webuntis.com","displayName":"Demo","loginName":"kbt"};
-    //document.querySelector('#schoollogin' ).school = mockSchool;
     </script>
 }

@@ -96,7 +96,6 @@
             },
 
             handleResponse: function(event, data){
-                console.log(data);
                 if(data.response.result){
                     this.schools = data.response.result.schools;
                     this.$.searchParamsDec.label = this.schools.length + " matches";

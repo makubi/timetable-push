@@ -10,6 +10,7 @@ trait WebUntisService{
   def doAuthentication(serverUrl: String, school: String, username: String, password: String): Future[WSResponse]
   def getElementList(serverUrl: String, authCookie: String, elementType: Int): Future[WSResponse]
   def doSchoolSearch(searchParams: String): Future[WSResponse]
+  def getUserData(serverUrl: String, school: String, username: String, password: String): Future[WSResponse]
 }
 
 class WebUntisServiceImpl(implicit inj: Injector) extends WebUntisService with Injectable{
@@ -21,7 +22,7 @@ class WebUntisServiceImpl(implicit inj: Injector) extends WebUntisService with I
   }
 
   def doAuthentication(serverUrl: String, school: String, username: String, password: String) = {
-    network.authenticate2(serverUrl, school, username, password)
+    network.authenticate(serverUrl, school, username, password)
   }
 
   def getElementList(serverUrl: String, authCookie: String, elementType: Int) = {
@@ -32,4 +33,7 @@ class WebUntisServiceImpl(implicit inj: Injector) extends WebUntisService with I
     network.schoolSearch(searchParams)
   }
 
+  override def getUserData(serverUrl: String, school: String, username: String, password: String): Future[WSResponse] = {
+    network.authenticate2(serverUrl, school, username, password)
+  }
 }

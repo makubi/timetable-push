@@ -71,13 +71,6 @@
             </paper-shadow>
         </div>
 
-        <core-ajax
-            id="ajax"
-            url=""
-            method="post"
-            handleAs="json"
-            on-core-response="{{handleResponse}}"></core-ajax>
-
     </template>
 
     <script>
@@ -93,18 +86,12 @@
                 var user = this.$.username.value;
                 var pass = this.$.password.value;
 
-                var url = "/js/loadLists?" +
-                    "se=" + encodeURIComponent(this.school.server) +
-                    "&sc=" + encodeURIComponent(this.school.loginName) +
-                    "&u=" + encodeURIComponent(user) +
-                    "&p=" + encodeURIComponent(pass);
-                this.$.ajax.url = url;
-                this.$.ajax.go();
-            },
+                this.school.user = user;
+                this.school.password = pass;
 
-            handleResponse: function(event, data){
-                this.fire("listsLoaded", data.response[0]);
+                this.fire("login", this.school)
             }
+
 
         });
     </script>

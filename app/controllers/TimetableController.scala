@@ -1,5 +1,6 @@
 package controllers
 
+import play.api.Logger
 import play.api.mvc.{Controller}
 import provider.{WebUntisProvider, UserProvider}
 import scaldi.{Injector, Injectable}
@@ -15,25 +16,22 @@ class TimetableController(implicit inj: Injector) extends Controller with Inject
 
   def schoolSearch(query: String) = withAuthOAsync(parse.anyContent) { (request, user) =>
     user match {
-      case Some(x) => {
-        webuntisProvider.doSchoolQuerty(query).map(Ok(_))
-      }
-      case None => Future{ Unauthorized }
-    }
-  }
-
-  def untisAuth(u: String, p: String) = withAuthOAsync(parse.anyContent){ (request, user) =>
-    user match {
-      case Some(x) => {
-        Future{ Ok  }
-      }
+      case Some(x) => webuntisProvider.doSchoolQuerty(query).map(Ok(_))
       case None => Future{ Unauthorized }
     }
   }
 
   def loadLists(se: String, sc: String, u: String, p: String) = withAuthOAsync(parse.anyContent) { (request, user) =>
+    Logger.info(s"$se $sc $u $p")
     user match{
-      case Some(x) => Future{ Ok }
+      case Some(x) => webuntisProvider.loadList(se, sc, u, p).map(Ok(_))
+      case None => Future{ Unauthorized }
+    }
+  }
+
+  def userData(se: String, sc: String, u: String, p: String) = withAuthOAsync(parse.anyContent) { (request, user) =>
+    user match{
+      case Some(x) => webuntisProvider.loadUserData(se, sc, u, p).map(Ok(_))
       case None => Future{ Unauthorized }
     }
   }
