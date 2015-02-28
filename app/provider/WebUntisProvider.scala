@@ -1,11 +1,12 @@
 package provider
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import scaldi.{Injector, Injectable}
 import services.WebUntisService
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future
+import scala.util.parsing.json.{JSONObject, JSONArray}
 
 trait WebUntisProvider {
   def doSchoolQuerty(query: String): Future[JsValue]
@@ -38,7 +39,9 @@ class WebUntisProviderImpl(implicit inj: Injector) extends WebUntisProvider with
         case Some(c) => {
           val listFutures = Future.sequence((1 to 4).toList.map(webuntisService.getElementList(checkUrl(server), c, _)))
           listFutures.map { response =>
-            Json.arr(response.map(e => Json.parse(e.body)))
+            Json.arr(response.map{ e =>
+              Json.parse(e._2.body).as[JsObject] ++ Json.obj("elementType" -> e._1)
+            })
           }
         }
         case None => {

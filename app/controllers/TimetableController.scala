@@ -22,7 +22,6 @@ class TimetableController(implicit inj: Injector) extends Controller with Inject
   }
 
   def loadLists(se: String, sc: String, u: String, p: String) = withAuthOAsync(parse.anyContent) { (request, user) =>
-    Logger.info(s"$se $sc $u $p")
     user match{
       case Some(x) => webuntisProvider.loadList(se, sc, u, p).map(Ok(_))
       case None => Future{ Unauthorized }

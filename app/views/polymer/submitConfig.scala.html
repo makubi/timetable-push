@@ -1,0 +1,115 @@
+@()
+
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/polymer/polymer.html")">
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-input/paper-input-decorator.html")">
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-icon-button/paper-icon-button.html")">
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/core-ajax/core-ajax.html")">
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-shadow/paper-shadow.html")">
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-ripple/paper-ripple.html")">
+
+<polymer-element name="submit-config" constructor="SubmitConfig">
+    <template>
+        <style>
+        :host {
+            display: block;
+            padding: 8px;
+            position: relative;
+            /*background-color: #E5E5E5;*/
+        }
+
+        .card{
+            margin: 8px;
+            font-size: 14px;
+            padding-left: 16px;
+            padding-right: 16px;
+            padding-bottom: 8px;
+            padding-top: 8px;
+            background: #fff;
+            line-height: 1.5;
+
+            /*height: 200px;*/
+        }
+        .cardhead {
+            font-size: 18px ;
+            color: #FF9800 ;
+            margin-bottom: 8px ;
+        }
+        .timetablehead {
+            font-size: 18px ;
+            color: #FF9800 ;
+        }
+        paper-ripple {
+            color: #FF9800;
+        }
+
+
+        </style>
+
+        <paper-shadow class="card" z="1" >
+            <table>
+                <tr>
+                    <td width="100px;">Element:</td>
+                    <td class="timetablehead">{{config.elementName}} ({{config.elementId}}/{{config.elementType}})</td>
+                </tr>
+                <tr>
+                    <td>School:</td>
+                    <td class="timetablehead">{{config.loginData.displayName}}</td>
+                </tr>
+                <tr>
+                    <td>Server:</td>
+                    <td class="timetablehead">{{config.loginData.server}}</td>
+                </tr>
+                <tr>
+                    <td>Login:</td>
+                    <td class="timetablehead">{{config.loginData.loginName}}</td>
+                </tr>
+                <tr>
+                    <td>User:</td>
+                    <td class="timetablehead">{{config.loginData.user}}</td>
+                </tr>
+                <tr>
+                    <td>Password:</td>
+                    <td class="timetablehead">{{config.loginData.password | passwd}}</td>
+                </tr>
+            </table>
+        </paper-shadow>
+
+
+        <core-ajax
+            id="ajax"
+            url="/search?searchParam="
+            method="post"
+            handleAs="json"
+            on-core-response="{{handleResponse}}"></core-ajax>
+
+    </template>
+
+    <script>
+    Polymer("submit-config", {
+
+        config: null,
+
+        setData: function(config){
+            this.config = config;
+            console.log(config);
+        },
+
+        search: function() {
+            var query = this.$.searchParams.value
+
+            this.$.ajax.url = "/js/search?q=" + encodeURIComponent(query);
+            this.$.ajax.go();
+        },
+
+        passwd: function(p){
+            if(p && p.length > 0){
+                    return "*******";
+                }else{
+                    return "";
+                }
+            }
+
+    });
+    </script>
+
+</polymer-element>

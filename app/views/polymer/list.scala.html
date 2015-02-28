@@ -1,6 +1,5 @@
 @()
-<link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-tabs/paper-tabs.html")"
-xmlns="http://www.w3.org/1999/html">
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-tabs/paper-tabs.html")" >
 <link rel="import" href="@routes.Assets.at("polymer/bower_components/core-animated-pages/core-animated-pages.html")">
 
 <link rel="import" href="@routes.Assets.at("polymer/bower_components/polymer/polymer.html")">
@@ -11,6 +10,7 @@ xmlns="http://www.w3.org/1999/html">
 <link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-item/paper-item.html")">
 <link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-fab/paper-fab.html")">
 <link rel="import" href="@routes.Assets.at("polymer/bower_components/core-icons/core-icons.html")">
+<link rel="import" href="@routes.Assets.at("polymer/bower_components/paper-spinner/paper-spinner.html")">
 
 <polymer-element name="master-list" constructor="MasterList" attribute="data">
     <template>
@@ -57,6 +57,14 @@ xmlns="http://www.w3.org/1999/html">
         </style>
         <paper-shadow class="card" z="1" is="auto-binding" style="">
 
+            <div horizontal layout center center-justified fit id="spinner">
+                <paper-spinner active></paper-spinner>
+            </div>
+
+            <div horizontal layout center center-justified fit id="error_access" style="display: none;">
+                <span class="cardhead">No Access</span>
+            </div>
+
             <paper-tabs selected="{{selected}}" selectedindex="0">
                 <template repeat="{{element in data}}">
                     <template if="{{element.elements}}">
@@ -65,12 +73,12 @@ xmlns="http://www.w3.org/1999/html">
                 </template>
             </paper-tabs>
 
-            <core-animated-pages selected="{{selected}}" selectedindex="0" notap style="overflow:auto;height:300px;">
+            <core-animated-pages selected="{{selected}}" selectedindex="0" notap style="overflow:auto; height:300px;">
                 <template repeat="{{e2 in data}}">
                     <template if="{{e2.elements}}">
                         <section>
                             <template repeat="{{e in e2.elements}}">
-                                <paper-item>{{e.name}} - {{e.longName}}</paper-item>
+                                <paper-item on-tap="{{elementSelected}}" data-elementtype="{{stringify(e2.elementType)}}" data-element="{{stringify(e)}}">{{e.name}} - {{e.longName}}</paper-item>
                             </template>
                         </section>
                     </template>
@@ -78,11 +86,11 @@ xmlns="http://www.w3.org/1999/html">
             </core-animated-pages>
 
             <div flex horizontal end-justified layout end>
-                <paper-fab id="paper_fab" icon="account-circle" />
+                <paper-fab id="paper_fab" icon="account-circle" on-tap={{personalTimetableSelected}} />
             </div>
 
-        </paper-shadow>
 
+        </paper-shadow>
 
         <core-ajax
             id="loadLists"
@@ -106,8 +114,11 @@ xmlns="http://www.w3.org/1999/html">
             data: [],
             userData: null,
             noAccess: "No Access",
+            loginSet: null,
 
             loadData: function(loginSet){
+                this.data = [];
+                this.loginSet = loginSet;
                 var urlLists = "/js/loadLists?";
                 var urlUserData = "/js/userData?";
 
@@ -120,11 +131,30 @@ xmlns="http://www.w3.org/1999/html">
                 this.$.loadUserData.url = urlUserData + user;
                 this.$.loadLists.go();
                 this.$.loadUserData.go();
+
+                this.$.spinner.style.display = "flex";
+                this.$.error_access.style.display = "none";
+
             },
 
             handleListResponse: function(event, data){
                 this.data = [];
-                this.data = data.response[0];
+                var d = data.response[0];
+
+                var i = 0;
+                for(x in d){
+                    if(d[x].isSessionTimeout){
+                        i++;
+                    }
+                }
+
+                if(i === 4){
+                    this.$.error_access.style.display = "flex";
+                }else{
+                    this.data = d;
+                }
+
+                this.$.spinner.style.display = "none";
             },
 
             handleUserDataResponse: function(event, data){
@@ -144,6 +174,31 @@ xmlns="http://www.w3.org/1999/html">
                 if(title === "IDC_LEHRER") return "Teacher";
                 if(title === "IDC_RAUM") return "Room";
                 if(title === "IDC_FACH") return "Subject";
+            },
+
+            elementSelected: function(e,f,g){
+                var elementType = g.attributes["data-elementtype"].value
+                var element = JSON.parse(g.attributes["data-element"].value)
+                console.log(element);
+                this.fireEvent(element.id, elementType, element.name, this.loginSet)
+            },
+
+            personalTimetableSelected: function(){
+                this.fireEvent(this.userData.personId, this.userData.personType, "Personal Timetable", this.loginSet);
+            },
+
+            stringify: function(obj){
+                return JSON.stringify(obj);
+            },
+
+            fireEvent: function(elementId, elementType, elementName, loginData){
+                var event = {
+                    "elementId": elementId,
+                    "elementType": elementType,
+                    "elementName": elementName,
+                    "loginData": loginData
+                }
+                this.fire("element-selected", event);
             }
 
         });

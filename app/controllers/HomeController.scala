@@ -40,7 +40,7 @@ class HomeController(implicit inj: Injector) extends Controller with Injectable 
 
   def getList(elementType: Int) = WUAuth(parse.anyContent, U_SERVER, SCHOOL, USER, PASSWORD){ (request, authCookie, server) =>
     webUntisService.getElementList(server, authCookie, elementType).map(
-      result => Ok(result.body)
+      result => Ok(result._2.body)
     )
   }
 
@@ -48,7 +48,7 @@ class HomeController(implicit inj: Injector) extends Controller with Injectable 
     val lists = (1 to 4).map(webUntisService.getElementList(server, authCookie, _))
     Future.sequence(lists).map(
       response => {
-        val data = response.map(e => Json.parse(e.body))
+        val data = response.map(e => Json.parse(e._2.body))
         Ok(Json.arr(data))
       }
     )

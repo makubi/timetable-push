@@ -2,13 +2,14 @@ package services
 
 import play.api.libs.ws.WSResponse
 import scaldi.{Injector, Injectable}
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future
 
 trait WebUntisService{
   def getTimetable(serverUrl: String, cookie: String, elementType: Int, elementId: Int, date: Int): Future[WSResponse]
   def doAuthentication(serverUrl: String, school: String, username: String, password: String): Future[WSResponse]
-  def getElementList(serverUrl: String, authCookie: String, elementType: Int): Future[WSResponse]
+  def getElementList(serverUrl: String, authCookie: String, elementType: Int): Future[(Int, WSResponse)]
   def doSchoolSearch(searchParams: String): Future[WSResponse]
   def getUserData(serverUrl: String, school: String, username: String, password: String): Future[WSResponse]
 }
@@ -25,8 +26,10 @@ class WebUntisServiceImpl(implicit inj: Injector) extends WebUntisService with I
     network.authenticate(serverUrl, school, username, password)
   }
 
-  def getElementList(serverUrl: String, authCookie: String, elementType: Int) = {
-    network.getList(serverUrl, authCookie, elementType)
+  def getElementList(serverUrl: String, authCookie: String, elementType: Int): Future[(Int, WSResponse)] = {
+    network.getList(serverUrl, authCookie, elementType).map{ response =>
+      (elementType -> response)
+    }
   }
 
   def doSchoolSearch(searchParams: String) = {
