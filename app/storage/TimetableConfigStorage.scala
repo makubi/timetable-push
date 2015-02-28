@@ -43,4 +43,7 @@ class TimetableConfigStorage{
     table.filter(_.userId === timetableConfig.userId).update(timetableConfig)
   }
 
+  def deleteConfigByUser(userId: UUID)(implicit session: Session): Unit ={
+    table.filter(_.userId === userId).delete
+  }
 }

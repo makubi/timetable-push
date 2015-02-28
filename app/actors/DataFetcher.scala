@@ -3,7 +3,7 @@ package actors
 import akka.actor.Actor
 import model.{MergedTimetablePeriod, UiUserBundle}
 import play.api.Logger
-import provider.UserProvider
+import provider.{WebUntisProvider, UserProvider}
 import scaldi.Injector
 import scaldi.akka.AkkaInjectable
 import services.WebUntisService
@@ -17,6 +17,7 @@ class DataFetcher(implicit inj: Injector) extends Actor with AkkaInjectable{
   val timetableService = inject[WebUntisService]
   val analystActor = injectActorRef[AnalystActor]
   val userProvider = inject[UserProvider]
+  val webUntisProvider = inject[WebUntisProvider]
 
   override def receive: Receive = {
     case user: UiUserBundle => doSomeStuff(user)
@@ -25,12 +26,10 @@ class DataFetcher(implicit inj: Injector) extends Actor with AkkaInjectable{
   def doSomeStuff(uiBundle: UiUserBundle) = {
     val config = uiBundle.uiTimetableConfig
     Logger.info(s"load data: ${config}")
-    timetableService.doAuthentication(config.url, config.school, config.userName, config.password).map{ auth =>
-      val session = (auth.json \ "result" \ "sessionId").asOpt[String]
-      Logger.info("auth: " + session.toString())
-      session match {
+    webUntisProvider.authenticate(config.url, config.school, config.userName, config.password).map{ auth =>
+      auth match {
         case Some(cookie) => {
-          Future.sequence(TimetableUtil.getRequestDate().map(timetableService.getTimetable(config.url, s"JSESSIONID=${cookie}", config.elementType, config.elmentId, _))
+          Future.sequence(TimetableUtil.getRequestDate().map(timetableService.getTimetable(config.url, cookie, config.elementType, config.elmentId, _))
           ).map{ data =>
 
             val results = data.map(r => JsonUtil.parseTimetableResponse(r.body).get)    //TODO possible error

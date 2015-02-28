@@ -17,6 +17,7 @@ trait UserProvider{
   def getUserByEmail(email: String): Option[UiUser]
   def setUserActivatedByEmail(uuid: UUID, l: Long): Boolean
   def setUserBundleFailed(uiUserBundle: UiUserBundle): Unit
+  def addTimetableConfig(userId: UUID, server: String, school: String, user: String, password: String, elmentId: Int, elmentType: Int): Unit
 }
 
 class UserProviderImpl(implicit inj: Injector) extends UserProvider with Injectable{
@@ -69,5 +70,17 @@ class UserProviderImpl(implicit inj: Injector) extends UserProvider with Injecta
   override def setUserBundleFailed(uiUserBundle: UiUserBundle): Unit = {
     val c = uiUserBundle.uiTimetableConfig
     timetableConfigService.setTimetableConfigError(TimetableConfig(c.configId,c.userId,c.url,c.school,c.elementType,c.elmentId,c.userName,c.password,c.error), true)
+  }
+
+  override def addTimetableConfig(userId: UUID, server: String, school: String, user: String, password: String, elementId: Int, elementType: Int): Unit = {
+    timetableConfigService.addTimetableConfig(userId, checkUrl(server), school, elementType,elementId, user, password, false)
+  }
+
+  private def checkUrl(url: String): String = {
+    if(!url.startsWith("http")){
+      s"https://${url}"
+    }else{
+      url
+    }
   }
 }

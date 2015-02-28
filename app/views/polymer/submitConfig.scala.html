@@ -42,11 +42,26 @@
             color: #FF9800;
         }
 
+        #fabSubmit{
+            background-color: #FF9800;
+        }
+
+        #spinner {
+            background: rgba(255, 255, 255, 0.8);
+            display: none;
+        }
 
         </style>
 
         <paper-shadow class="card" z="1" >
             <table>
+                <div horizontal layout center center-justified fit id="spinner">
+                    <paper-spinner active></paper-spinner>
+                </div>
+                <div horizontal layout center center-justified fit id="error_access" style="display: none;background: rgba(255, 255, 255, 0.8);">
+                    <span class="cardhead">Error :(</span>
+                </div>
+
                 <tr>
                     <td width="100px;">Element:</td>
                     <td class="timetablehead">{{config.elementName}} ({{config.elementId}}/{{config.elementType}})</td>
@@ -72,14 +87,18 @@
                     <td class="timetablehead">{{config.loginData.password | passwd}}</td>
                 </tr>
             </table>
+
+            <div flex horizontal end-justified layout end>
+                <paper-fab id="fabSubmit" icon="check" on-tap="{{addConfig}}" />
+            </div>
+
         </paper-shadow>
 
 
         <core-ajax
             id="ajax"
-            url="/search?searchParam="
+            url=""
             method="post"
-            handleAs="json"
             on-core-response="{{handleResponse}}"></core-ajax>
 
     </template>
@@ -94,16 +113,45 @@
             console.log(config);
         },
 
-        search: function() {
-            var query = this.$.searchParams.value
 
-            this.$.ajax.url = "/js/search?q=" + encodeURIComponent(query);
-            this.$.ajax.go();
+        addConfig: function(){
+            console.log(this.config);
+            if(this.config){
+                var ei = this.config.elementId;
+                var et = this.config.elementType;
+                var se = this.config.loginData.server;
+                var u = this.config.loginData.user;
+                var p = this.config.loginData.password;
+                var sc = this.config.loginData.loginName;
+
+                var url = "/js/addConfig?" +
+                    "ei=" + encodeURIComponent(ei) +
+                    "&et=" +  encodeURIComponent(et) +
+                    "&se=" +  encodeURIComponent(se) +
+                    "&u=" +  encodeURIComponent(u) +
+                    "&p=" +  encodeURIComponent(p) +
+                    "&sc=" +  encodeURIComponent(sc);
+
+                console.log(url);
+
+                this.$.spinner.style.display = "flex";
+                this.$.ajax.url = url;
+                this.$.ajax.go();
+            }
+        },
+
+        handleResponse: function(event, data){
+            if(data.xhr.status === 200){
+                window.location = "/user";
+            }else{
+                this.$.spinner.style.display = "none";
+                this.$.error_access.style.display = "flex";
+            }
         },
 
         passwd: function(p){
             if(p && p.length > 0){
-                    return "*******";
+                    return "***";
                 }else{
                     return "";
                 }

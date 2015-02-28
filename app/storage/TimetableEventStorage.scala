@@ -40,4 +40,8 @@ class TimetableEventStorage {
     table.filter(_.eventId === eventId).firstOption
   }
 
+  def deleteEvents(userId: UUID, configId: UUID)(implicit session: Session): Unit = {
+    table.filter(t => (t.userId === userId && t.configId === configId)).delete
+  }
+
 }

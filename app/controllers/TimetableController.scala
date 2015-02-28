@@ -34,4 +34,15 @@ class TimetableController(implicit inj: Injector) extends Controller with Inject
       case None => Future{ Unauthorized }
     }
   }
+
+  def addConfig(se: String, sc: String, u: String, p: String, ei: Int, et: Int) = withAuthOAsync(parse.anyContent) { (request, user) =>
+    Logger.info(s"$se $sc $u $p $ei $et");
+    user match {
+      case Some(x) => Future{
+        userProvider.addTimetableConfig(x.userId, se, sc, u, p, ei, et)
+        Ok
+      }
+      case None => Future{ Unauthorized }
+    }
+  }
 }
