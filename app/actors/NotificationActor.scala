@@ -10,7 +10,9 @@ class NotificationActor(implicit inj: Injector) extends Actor with AkkaInjectabl
 
   // faelle ->
   // activate user by email
-  //
+  // user activated by admin
+  // config failed
+  // send events by push/mail
 
   override def receive: Receive = {
     case data: (List[UiTimetableEvent],UiUserBundle) => notify(data._1, data._2)

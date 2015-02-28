@@ -8,7 +8,6 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import utils.{JsonUtil, TimetableUtil}
 
 import scala.concurrent.Future
-import scala.util.parsing.json.{JSONObject, JSONArray}
 
 trait WebUntisProvider {
   def doSchoolQuerty(query: String): Future[JsValue]

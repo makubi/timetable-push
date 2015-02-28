@@ -21,6 +21,7 @@ POST        /js/userData                         @controllers.TimetableControlle
 POST        /js/loadLists                        @controllers.TimetableController.loadLists(se: String, sc: String, u: String, p: String)
 POST        /js/addConfig                        @controllers.TimetableController.addConfig(se: String, sc: String, u: String, p: String, ei: Int, et: Int)
 
+
 #
 #GET         /list/:elementType        @controllers.HomeController.getList(elementType: Int)
 #
