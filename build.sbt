@@ -1,4 +1,5 @@
 import sbt._
+import NativePackagerKeys._
 
 name := """timetable-push"""
 
@@ -23,3 +24,11 @@ libraryDependencies ++= Seq(
   "org.mindrot"                   %   "jbcrypt"       % "0.3m",
   "com.fasterxml.jackson.module"  %   "jackson-module-scala_2.11"   % "2.5.1"
 )
+
+// setting a maintainer which is used for all packaging types</pre>
+maintainer:= "Mathias Kub"
+ 
+// exposing the play ports
+dockerExposedPorts in Docker := Seq(9000, 9443)
+ 
+// run this with: docker run -p 9000:9000 <name>:<version>
